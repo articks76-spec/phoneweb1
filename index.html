@@ -20,7 +20,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
             overflow: hidden;
             height: 100vh;
-            background: #000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,7 +40,7 @@
                 0 0 0 14px #333,
                 0 25px 50px rgba(0, 0, 0, 0.6),
                 0 0 120px rgba(0, 0, 0, 0.4);
-            border: 1px solid #444;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Dynamic Island */
@@ -51,14 +51,16 @@
             transform: translateX(-50%);
             width: 126px;
             height: 37px;
-            background: #000;
+            background: rgba(0, 0, 0, 0.9);
             border-radius: 23px;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 12px;
             z-index: 1001;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .dynamic-btn {
@@ -72,8 +74,8 @@
             font-size: 0.9rem;
             color: white;
             background: rgba(255, 255, 255, 0.15);
-            transition: all 0.2s;
-            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
         }
 
         .dynamic-btn:active {
@@ -81,35 +83,63 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* Lock Screen - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ */
+        /* Lock Screen - Красивый экран блокировки */
         #lock-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             color: white;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
             padding: 120px 20px 80px;
             z-index: 1000;
-            transition: transform 0.5s ease;
-            touch-action: pan-y;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
         }
 
         #lock-screen.hidden {
             transform: translateY(-100%);
         }
 
+        /* Анимированный фон блокировки */
+        .lock-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(52, 199, 89, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 59, 48, 0.1) 0%, transparent 50%);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, 10px) rotate(90deg); }
+            50% { transform: translate(0, 20px) rotate(180deg); }
+            75% { transform: translate(-10px, 10px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
         .lock-time {
             font-size: 5rem;
             font-weight: 300;
-            letter-spacing: -2px;
+            letter-spacing: -3px;
             margin-top: 60px;
             font-variant-numeric: tabular-nums;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .lock-date {
@@ -117,59 +147,81 @@
             opacity: 0.9;
             margin-bottom: 40px;
             font-weight: 400;
-        }
-
-        .lock-screen-footer {
-            font-size: 1rem;
-            opacity: 0.7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
             position: relative;
             z-index: 2;
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .lock-screen-footer i {
-            font-size: 1.6rem;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-8px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        /* Простая кнопка для разблокировки */
-        .unlock-button {
+        /* Стильная кнопка разблокировки */
+        .unlock-container {
             position: absolute;
             bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            width: 90%;
+            max-width: 320px;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .unlock-button {
+            width: 100%;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
+            border-radius: 35px;
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 2;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .unlock-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .unlock-button:hover::before {
+            left: 100%;
         }
 
         .unlock-button:active {
-            background: rgba(255, 255, 255, 0.2);
             transform: translateX(-50%) scale(0.95);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+        }
+
+        .unlock-button i {
+            font-size: 1.4rem;
+            transition: transform 0.3s;
+        }
+
+        .unlock-button:active i {
+            transform: translateY(5px);
+        }
+
+        .unlock-hint {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
         }
 
         /* OS Container */
@@ -202,6 +254,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         .notification-icon {
@@ -224,9 +277,17 @@
             align-items: center;
             font-weight: 700;
             border: 2px solid #000;
+            box-shadow: 0 3px 10px rgba(255, 59, 48, 0.4);
+            animation: pulse 2s infinite;
         }
 
-        /* Шторка (Notification Panel) */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Шторка уведомлений */
         #notification-panel {
             position: fixed;
             top: 0;
@@ -234,14 +295,15 @@
             width: 100%;
             height: 500px;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(40px);
+            backdrop-filter: blur(40px) saturate(180%);
             transform: translateY(-100%);
-            transition: transform 0.4s ease;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 150;
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         #notification-panel.show {
@@ -249,7 +311,7 @@
         }
 
         .notification-header {
-            padding: 30px 25px 20px;
+            padding: 35px 25px 20px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-between;
@@ -258,134 +320,96 @@
         }
 
         .notification-header h3 {
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: #000;
+            letter-spacing: -0.5px;
         }
 
         #close-notifications {
             font-size: 1.4rem;
             color: #007AFF;
             cursor: pointer;
-            padding: 10px;
+            padding: 12px;
             border-radius: 50%;
-            transition: background 0.2s;
+            transition: all 0.3s;
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #close-notifications:active {
-            background: rgba(0, 122, 255, 0.1);
+            background: rgba(0, 122, 255, 0.15);
+            transform: scale(0.9);
         }
 
         #notifications-list {
-            padding: 15px;
+            padding: 20px;
             overflow-y: auto;
-            height: calc(100% - 100px);
+            height: calc(100% - 110px);
         }
 
         .notification-item {
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.03);
-            border-radius: 18px;
-            margin-bottom: 12px;
-            border-left: 5px solid #007AFF;
-            transition: all 0.2s;
+            padding: 22px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.02), rgba(0,0,0,0.05));
+            border-radius: 20px;
+            margin-bottom: 15px;
+            border-left: 6px solid;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,122,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .notification-item:active {
-            background: rgba(0, 0, 0, 0.08);
-            transform: scale(0.995);
+            transform: translateY(-2px) scale(0.998);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-item:active::before {
+            opacity: 1;
         }
 
         .notification-title {
             font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
             color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .notification-text {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #666;
             line-height: 1.5;
+            position: relative;
+            z-index: 1;
         }
 
         .notification-time {
-            font-size: 0.8rem;
-            color: #999;
-            margin-top: 8px;
-        }
-
-        /* Control Center */
-        #control-center {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 450px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(40px);
-            transform: translateY(-100%);
-            transition: transform 0.4s ease;
-            z-index: 149;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            display: block;
-        }
-
-        #control-center.show {
-            transform: translateY(0);
-        }
-
-        .control-header {
-            padding: 30px 25px 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 100%);
-        }
-
-        .control-header h3 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #000;
-        }
-
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            padding: 25px;
-        }
-
-        .control-item {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 20px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .control-item:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 1);
-        }
-
-        .control-item i {
-            font-size: 1.8rem;
-            color: #007AFF;
-        }
-
-        .control-item span {
             font-size: 0.85rem;
-            font-weight: 600;
-            color: #000;
-            text-align: center;
+            color: #999;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Home Screen */
@@ -398,26 +422,26 @@
             background-size: cover;
             background-position: center;
             overflow-y: auto;
-            transition: background-image 0.5s ease;
+            transition: background-image 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .wallpaper-1 {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwOyIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMUExQTFBOyIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIzOTAiIGhlaWdodD0iODQ0IiBmaWxsPSJ1cmwoI2cpIiAvPgo8L3N2Zz4=');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwOyIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxQTFBMUE7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZy0yIiBjeD0iNTAiIGN5PSI1MCIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwODBGRjsiIHN0b3Atb3BhY2l0eT0iMC4zIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDAwMDA7IiBzdG9wLW9wYWNpdHk9IjAiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgZmlsbD0idXJsKCNnKSIgLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSI0MDAiIHI9IjIwMCIgZmlsbD0idXJsKCNnLTIpIiAvPgo8L3N2Zz4=');
         }
 
         .wallpaper-2 {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZyIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwN0NFRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwODBGMDsiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgZmlsbD0idXJsKCNnKSIgLz4KPC9zdmc+');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZyIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwN0NFRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwODBGMDsiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnLTIiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA3Q0VGOyIgc3RvcC1vcGFjaXR5PSIwLjUiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwRkZGRjsiIHN0b3Atb3BhY2l0eT0iMC41IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjM5MCIgaGVpZ2h0PSI4NDQiIGZpbGw9InVybCgjZykiIC8+CiAgPHJlY3Qgd2lkdGg9IjM5MCIgaGVpZ2h0PSI4NDQiIGZpbGw9InVybCgjZy0yKSIgLz4KPC9zdmc+');
         }
 
         .wallpaper-3 {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwRkZGRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDBGRjsiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgZmlsbD0idXJsKCNnKSIgLz4KPC9zdmc+');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwM00vc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDBGRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDBGRjsiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJnLTIiIGN4PSIwJSIgY3k9IjEwMCUiIHI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwOyIgc3RvcC1vcGFjaXR5PSIwIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDAwMDA7IiBzdG9wLW9wYWNpdHk9IjAuOCIgLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIzOTAiIGhlaWdodD0iODQ0IiBmaWxsPSJ1cmwoI2cpIiAvPgogIDxyZWN0IHdpZHRoPSIzOTAiIGhlaWdodD0iODQ0IiBmaWxsPSJ1cmwoI2ctMikiIC8+Cjwvc3ZnPg==');
         }
 
         .apps-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 22px;
-            padding: 25px;
+            gap: 24px;
+            padding: 30px;
             margin-top: 15px;
         }
 
@@ -426,60 +450,90 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 12px;
-            border-radius: 22px;
+            padding: 22px 14px;
+            border-radius: 26px;
             background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px);
-            transition: all 0.3s;
+            backdrop-filter: blur(30px) saturate(200%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .app-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
         }
 
         .app-icon:active {
-            transform: scale(0.95);
+            transform: scale(0.92) translateY(5px);
             background: rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 6px 25px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .app-icon:active::before {
+            opacity: 1;
         }
 
         .app-icon i {
-            font-size: 2.4rem;
-            margin-bottom: 10px;
+            font-size: 2.6rem;
+            margin-bottom: 12px;
             color: white;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            position: relative;
+            z-index: 1;
         }
 
         .app-icon span {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: white;
             text-align: center;
             font-weight: 500;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
         }
 
         .dock {
             position: absolute;
-            bottom: 100px;
-            left: 25px;
-            right: 25px;
+            bottom: 110px;
+            left: 30px;
+            right: 30px;
             display: flex;
             justify-content: space-around;
-            gap: 20px;
-            padding: 15px;
+            gap: 22px;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(30px);
-            border-radius: 28px;
+            backdrop-filter: blur(40px) saturate(200%);
+            border-radius: 32px;
             z-index: 10;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         .dock .app-icon {
-            width: 68px;
-            height: 68px;
-            padding: 15px;
+            width: 72px;
+            height: 72px;
+            padding: 18px;
         }
 
         .dock .app-icon i {
-            font-size: 2rem;
+            font-size: 2.2rem;
         }
 
         /* App Windows */
@@ -490,62 +544,81 @@
             width: 350px;
             height: 640px;
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            border-radius: 28px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
             display: none;
             flex-direction: column;
             z-index: 10;
             overflow: hidden;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .app-window.active {
             display: flex;
             z-index: 20;
+            transform: scale(1);
+            opacity: 1;
         }
 
         .window-header {
-            height: 60px;
-            background: #f8f8f8;
+            height: 64px;
+            background: linear-gradient(135deg, #f8f8f8, #ffffff);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 24px;
+            padding: 0 28px;
             border-bottom: 1px solid #e5e5ea;
             cursor: move;
+            user-select: none;
         }
 
         .window-title {
-            font-weight: 650;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             color: #000;
         }
 
         .window-controls {
             display: flex;
-            gap: 14px;
+            gap: 16px;
         }
 
         .window-btn {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .minimize-btn { background: #FF9500; color: white; }
-        .maximize-btn { background: #34C759; color: white; }
-        .close-btn { background: #FF3B30; color: white; }
+        .minimize-btn { 
+            background: linear-gradient(135deg, #FF9500, #FF8A00);
+            color: white;
+        }
+
+        .maximize-btn { 
+            background: linear-gradient(135deg, #34C759, #2DBE4C);
+            color: white;
+        }
+
+        .close-btn { 
+            background: linear-gradient(135deg, #FF3B30, #FF2D20);
+            color: white;
+        }
 
         .window-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.85);
         }
 
         .app-content {
@@ -557,14 +630,16 @@
         /* Home Indicator */
         .home-indicator {
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 140px;
+            width: 150px;
             height: 6px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.92);
             border-radius: 3px;
             z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* Utility */
@@ -582,24 +657,25 @@
         .calculator-display {
             background-color: #000;
             color: white;
-            padding: 35px 25px;
+            padding: 40px 30px;
             text-align: right;
-            font-size: 3.5rem;
+            font-size: 4rem;
             font-weight: 300;
-            min-height: 140px;
+            min-height: 160px;
             display: flex;
             align-items: center;
             justify-content: flex-end;
             word-break: break-all;
             overflow: hidden;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .calculator-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
+            gap: 16px;
             flex-grow: 1;
-            padding: 25px;
+            padding: 30px;
             background: #000;
         }
 
@@ -607,7 +683,7 @@
             background: #333;
             border: none;
             border-radius: 50%;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             cursor: pointer;
             transition: all 0.2s;
             color: white;
@@ -615,27 +691,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .calc-btn:active {
             transform: scale(0.9);
+            opacity: 0.8;
         }
 
         .calc-btn.operator {
-            background: #FF9500;
+            background: linear-gradient(135deg, #FF9500, #FF8A00);
             color: white;
         }
 
         .calc-btn.clear {
-            background: #a5a5a5;
+            background: linear-gradient(135deg, #a5a5a5, #8e8e93);
             color: #000;
         }
 
         .calc-btn.zero {
             grid-column: span 2;
-            border-radius: 45px;
+            border-radius: 50px;
             aspect-ratio: auto;
-            padding-left: 35px;
+            padding-left: 40px;
             justify-content: flex-start;
         }
     </style>
@@ -654,25 +732,25 @@
             </div>
         </div>
 
-        <!-- Lock Screen - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ -->
+        <!-- Lock Screen -->
         <div id="lock-screen">
+            <div class="lock-bg"></div>
             <div class="lock-time" id="lock-time">00:00</div>
             <div class="lock-date" id="lock-date">Понедельник, 1 января</div>
             
-            <div class="lock-screen-footer">
-                <i class="fas fa-lock"></i>
-                <span>WebOS - iOS 18</span>
+            <div class="unlock-container">
+                <div class="unlock-button" id="unlock-button">
+                    <i class="fas fa-lock-open"></i>
+                    Нажмите для разблокировки
+                </div>
+                <div class="unlock-hint">
+                    Доступ к рабочим приложениям
+                </div>
             </div>
             
-            <!-- ПРОСТАЯ КНОПКА ДЛЯ РАЗБЛОКИРОВКИ -->
-            <div class="unlock-button" id="unlock-button">
-                <i class="fas fa-chevron-up"></i>
-                Проведите вверх для разблокировки
-            </div>
-            
-            <!-- Также вся нижняя часть экрана кликабельна -->
-            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 200px; background: transparent; z-index: 1;"
-                 id="lock-bottom-area"></div>
+            <!-- Также весь экран кликабелен для разблокировки -->
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 1;"
+                 id="lock-full-area"></div>
         </div>
 
         <!-- OS Container -->
@@ -700,48 +778,7 @@
                     <i class="fas fa-times" id="close-notifications"></i>
                 </div>
                 <div id="notifications-list">
-                    <!-- Уведомления будут добавляться динамически -->
-                </div>
-            </div>
-
-            <!-- Control Center -->
-            <div id="control-center">
-                <div class="control-header">
-                    <h3>Пункт управления</h3>
-                </div>
-                <div class="control-grid">
-                    <div class="control-item" id="control-wifi">
-                        <i class="fas fa-wifi"></i>
-                        <span>Wi-Fi</span>
-                    </div>
-                    <div class="control-item" id="control-bluetooth">
-                        <i class="fas fa-bluetooth"></i>
-                        <span>Bluetooth</span>
-                    </div>
-                    <div class="control-item" id="control-airplane">
-                        <i class="fas fa-plane"></i>
-                        <span>Авиарежим</span>
-                    </div>
-                    <div class="control-item" id="control-flashlight">
-                        <i class="fas fa-bolt"></i>
-                        <span>Фонарик</span>
-                    </div>
-                    <div class="control-item" id="control-rotation">
-                        <i class="fas fa-lock"></i>
-                        <span>Блокировка</span>
-                    </div>
-                    <div class="control-item" id="control-dnd">
-                        <i class="fas fa-moon"></i>
-                        <span>Не беспокоить</span>
-                    </div>
-                    <div class="control-item" id="control-screenshot">
-                        <i class="fas fa-camera"></i>
-                        <span>Скриншот</span>
-                    </div>
-                    <div class="control-item" id="control-settings">
-                        <i class="fas fa-cog"></i>
-                        <span>Настройки</span>
-                    </div>
+                    <!-- Уведомления добавляются динамически -->
                 </div>
             </div>
 
@@ -839,37 +876,160 @@
                     </div>
                 </div>
                 <div class="app-content">
-                    <div style="padding: 25px;">
-                        <h3 style="margin-bottom: 25px; font-size: 1.4rem;">Настройки системы</h3>
+                    <div style="padding: 30px;">
+                        <h3 style="margin-bottom: 30px; font-size: 1.6rem; font-weight: 700;">Настройки системы</h3>
                         
-                        <div style="margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #e5e5ea;">
-                                <span style="font-weight: 500;">Wi-Fi</span>
+                        <div style="margin-bottom: 30px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #e5e5ea;">
+                                <div style="font-weight: 600;">Wi-Fi</div>
                                 <label style="position: relative; width: 54px; height: 32px;">
                                     <input type="checkbox" id="wifi-toggle" style="opacity: 0; width: 0; height: 0;">
-                                    <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #e5e5ea; border-radius: 34px; transition: .4s;">
-                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s;"></span>
+                                    <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #e5e5ea; border-radius: 34px; transition: .4s; cursor: pointer;">
+                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></span>
                                     </span>
                                 </label>
                             </div>
                             
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #e5e5ea;">
-                                <span style="font-weight: 500;">Bluetooth</span>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #e5e5ea;">
+                                <div style="font-weight: 600;">Bluetooth</div>
                                 <label style="position: relative; width: 54px; height: 32px;">
                                     <input type="checkbox" id="bluetooth-toggle" style="opacity: 0; width: 0; height: 0;">
-                                    <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #e5e5ea; border-radius: 34px; transition: .4s;">
-                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s;"></span>
+                                    <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #e5e5ea; border-radius: 34px; transition: .4s; cursor: pointer;">
+                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></span>
                                     </span>
                                 </label>
                             </div>
                         </div>
                         
-                        <div style="margin-top: 30px;">
-                            <h4 style="margin-bottom: 15px; font-weight: 500;">Обои</h4>
+                        <div style="margin-top: 40px;">
+                            <h4 style="margin-bottom: 20px; font-weight: 600;">Обои</h4>
                             <div style="display: flex; gap: 15px;">
-                                <button class="wallpaper-btn" data-wallpaper="1" style="flex: 1; padding: 15px; background: #007AFF; color: white; border: none; border-radius: 12px; font-weight: 500; cursor: pointer;">Синий</button>
-                                <button class="wallpaper-btn" data-wallpaper="2" style="flex: 1; padding: 15px; background: #007AFF; color: white; border: none; border-radius: 12px; font-weight: 500; cursor: pointer;">Градиент</button>
-                                <button class="wallpaper-btn" data-wallpaper="3" style="flex: 1; padding: 15px; background: #007AFF; color: white; border: none; border-radius: 12px; font-weight: 500; cursor: pointer;">Фиолет</button>
+                                <button class="wallpaper-btn" data-wallpaper="1" style="flex: 1; padding: 18px; background: linear-gradient(135deg, #007AFF, #0056CC); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Синий</button>
+                                <button class="wallpaper-btn" data-wallpaper="2" style="flex: 1; padding: 18px; background: linear-gradient(135deg, #007AFF, #0056CC); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Градиент</button>
+                                <button class="wallpaper-btn" data-wallpaper="3" style="flex: 1; padding: 18px; background: linear-gradient(135deg, #007AFF, #0056CC); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Фиолет</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-window" id="notes-window" data-app="notes">
+                <div class="window-header">
+                    <div class="window-title">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Заметки</span>
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-btn minimize-btn" data-window="notes">
+                            <i class="fas fa-minus"></i>
+                        </div>
+                        <div class="window-btn maximize-btn" data-window="notes">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                        <div class="window-btn close-btn" data-window="notes">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-content">
+                    <div style="padding: 30px;">
+                        <div style="background: white; border-radius: 16px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                            <h3 style="margin-bottom: 20px; font-size: 1.4rem; font-weight: 700;">Новая заметка</h3>
+                            <textarea id="note-content" placeholder="Начните вводить текст..." style="width: 100%; height: 250px; border: none; font-family: inherit; font-size: 1.1rem; resize: none; outline: none;"></textarea>
+                            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                                <button id="save-note" style="flex: 1; padding: 16px; background: linear-gradient(135deg, #34C759, #2DBE4C); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Сохранить</button>
+                                <button id="clear-note" style="flex: 1; padding: 16px; background: linear-gradient(135deg, #8E8E93, #6C6C70); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Очистить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-window" id="weather-window" data-app="weather">
+                <div class="window-header">
+                    <div class="window-title">
+                        <i class="fas fa-cloud-sun"></i>
+                        <span>Погода</span>
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-btn minimize-btn" data-window="weather">
+                            <i class="fas fa-minus"></i>
+                        </div>
+                        <div class="window-btn maximize-btn" data-window="weather">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                        <div class="window-btn close-btn" data-window="weather">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-content">
+                    <div style="padding: 40px; text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 20px;">Москва</div>
+                        <div style="font-size: 5rem; font-weight: 300; margin-bottom: 30px;">24°C</div>
+                        <div style="font-size: 2rem; margin-bottom: 40px;">
+                            <i class="fas fa-sun" style="color: #FF9500;"></i>
+                        </div>
+                        <div style="font-size: 1.3rem; color: #666; margin-bottom: 40px;">Солнечно</div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <div style="background: rgba(0,122,255,0.1); border-radius: 16px; padding: 20px;">
+                                <div style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Влажность</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">65%</div>
+                            </div>
+                            <div style="background: rgba(0,122,255,0.1); border-radius: 16px; padding: 20px;">
+                                <div style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Ветер</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;">5 м/с</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-window" id="music-window" data-app="music">
+                <div class="window-header">
+                    <div class="window-title">
+                        <i class="fas fa-music"></i>
+                        <span>Музыка</span>
+                    </div>
+                    <div class="window-controls">
+                        <div class="window-btn minimize-btn" data-window="music">
+                            <i class="fas fa-minus"></i>
+                        </div>
+                        <div class="window-btn maximize-btn" data-window="music">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                        <div class="window-btn close-btn" data-window="music">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-content">
+                    <div style="padding: 40px; text-align: center;">
+                        <div style="width: 200px; height: 200px; background: linear-gradient(135deg, #007AFF, #0056CC); border-radius: 20px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: white;">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div style="margin-bottom: 30px;">
+                            <div style="font-size: 1.8rem; font-weight: 700; margin-bottom: 10px;">Song Title</div>
+                            <div style="font-size: 1.2rem; color: #666;">Artist Name</div>
+                        </div>
+                        <div style="margin: 40px 0;">
+                            <div style="height: 4px; background: #e5e5ea; border-radius: 2px; overflow: hidden; margin-bottom: 10px;">
+                                <div id="music-progress" style="height: 100%; width: 30%; background: #007AFF;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                                <span>0:00</span>
+                                <span>3:45</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 30px;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer;">
+                                <i class="fas fa-backward"></i>
+                            </div>
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer;">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer;">
+                                <i class="fas fa-forward"></i>
                             </div>
                         </div>
                     </div>
@@ -880,25 +1040,29 @@
 
     <script>
         // WebOS - iOS 18 Simulator
-        // РАБОЧАЯ РАЗБЛОКИРОВКА!
+        // КРАСИВЫЙ ДИЗАЙН С РАБОЧЕЙ РАЗБЛОКИРОВКОЙ
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("Система загружается...");
+            console.log("✨ iOS 18 загружается...");
             
             // Инициализация системы
             initSystem();
             initApps();
-            initLockScreen(); // ОЧЕНЬ ВАЖНО!
+            initLockScreen(); // РАБОЧАЯ РАЗБЛОКИРОВКА
             initNotifications();
-            initControlCenter();
             initTime();
             initCalculator();
             initSettings();
+            initNotes();
+            initMusicPlayer();
             
             // Добавляем тестовые уведомления
             addNotification("Добро пожаловать", "iOS 18 успешно загружена");
-            addNotification("Система", "Все системы работают стабильно");
-            addNotification("Разблокировка", "Нажмите кнопку внизу для разблокировки");
+            addNotification("Система", "Все приложения готовы к работе");
+            addNotification("Разблокировка", "Нажмите кнопку для доступа к приложениям");
+            
+            // Вибрация при загрузке
+            if (navigator.vibrate) navigator.vibrate(100);
         });
 
         // Состояние системы
@@ -907,13 +1071,23 @@
             wallpaper: 1,
             wifi: true,
             bluetooth: false,
-            airplane: false,
-            notifications: []
+            notifications: [],
+            notes: [],
+            music: {
+                playing: false,
+                currentTime: 0,
+                duration: 225
+            }
         };
 
         // Инициализация системы
         function initSystem() {
-            console.log("Инициализация системы...");
+            console.log("📱 Инициализация системы...");
+        }
+
+        // Инициализация приложений
+        function initApps() {
+            console.log("📲 Загрузка приложений...");
             
             // Создание значков приложений
             const apps = [
@@ -942,7 +1116,7 @@
                 `;
                 div.addEventListener('click', () => {
                     if (systemState.locked) {
-                        addNotification("Заблокировано", "Разблокируйте устройство");
+                        addNotification("🔒 Заблокировано", "Разблокируйте устройство");
                         if (navigator.vibrate) navigator.vibrate(50);
                         return;
                     }
@@ -956,7 +1130,7 @@
                 icon.addEventListener('click', () => {
                     const appId = icon.dataset.app;
                     if (systemState.locked) {
-                        addNotification("Заблокировано", "Разблокируйте устройство");
+                        addNotification("🔒 Заблокировано", "Разблокируйте устройство");
                         if (navigator.vibrate) navigator.vibrate(50);
                         return;
                     }
@@ -973,40 +1147,37 @@
             
             document.getElementById('dynamic-camera').addEventListener('click', () => {
                 if (!systemState.locked) {
-                    addNotification("Камера", "Камера запущена");
+                    addNotification("📷 Камера", "Камера запущена");
+                    if (navigator.vibrate) navigator.vibrate(30);
                 }
             });
             
             document.getElementById('dynamic-flashlight').addEventListener('click', () => {
                 if (!systemState.locked) {
-                    addNotification("Фонарик", "Фонарик переключен");
+                    addNotification("🔦 Фонарик", "Фонарик переключен");
+                    if (navigator.vibrate) navigator.vibrate(30);
                 }
             });
         }
 
-        // ИНИЦИАЛИЗАЦИЯ ЭКРАНА БЛОКИРОВКИ - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ
+        // ИНИЦИАЛИЗАЦИЯ ЭКРАНА БЛОКИРОВКИ - 100% РАБОТАЕТ
         function initLockScreen() {
-            console.log("Инициализация экрана блокировки...");
+            console.log("🔐 Инициализация экрана блокировки...");
             
             const lockScreen = document.getElementById('lock-screen');
             const unlockButton = document.getElementById('unlock-button');
-            const lockBottomArea = document.getElementById('lock-bottom-area');
+            const lockFullArea = document.getElementById('lock-full-area');
             
-            // 1. Кнопка для разблокировки (ОСНОВНОЙ СПОСОБ)
-            unlockButton.addEventListener('click', unlockDevice);
-            
-            // 2. Клик по нижней области экрана
-            lockBottomArea.addEventListener('click', unlockDevice);
-            
-            // 3. Также клик по всему экрану блокировки (кроме верхней части)
-            lockScreen.addEventListener('click', function(e) {
-                // Если клик в нижних 2/3 экрана
-                if (e.clientY > window.innerHeight / 3) {
-                    unlockDevice();
-                }
+            // 1. Основная кнопка разблокировки (самая большая и красивая)
+            unlockButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                unlockDevice();
             });
             
-            // 4. Touch события для свайпа
+            // 2. Клик по любой области экрана
+            lockFullArea.addEventListener('click', unlockDevice);
+            
+            // 3. Также обработка свайпа
             let touchStartY = 0;
             
             lockScreen.addEventListener('touchstart', function(e) {
@@ -1017,13 +1188,12 @@
                 const touchEndY = e.changedTouches[0].clientY;
                 const swipeDistance = touchStartY - touchEndY;
                 
-                // Если свайп вверх более 30px
-                if (swipeDistance > 30) {
+                if (swipeDistance > 40) {
                     unlockDevice();
                 }
             });
             
-            // 5. Также обработка клавиши пробела для десктопа
+            // 4. Клавиша пробела для десктопа
             document.addEventListener('keydown', function(e) {
                 if (e.code === 'Space' && systemState.locked) {
                     unlockDevice();
@@ -1031,47 +1201,39 @@
             });
         }
 
-        // ФУНКЦИЯ РАЗБЛОКИРОВКИ - РАБОТАЕТ 100%
+        // ФУНКЦИЯ РАЗБЛОКИРОВКИ - 100% РАБОТАЕТ
         function unlockDevice() {
-            console.log("Попытка разблокировки...");
+            console.log("🎯 Разблокировка устройства...");
             
-            if (!systemState.locked) {
-                console.log("Устройство уже разблокировано");
-                return;
-            }
+            if (!systemState.locked) return;
             
             const lockScreen = document.getElementById('lock-screen');
             const osContainer = document.getElementById('os-container');
             
-            console.log("Скрываем экран блокировки...");
+            // Вибрация при нажатии
+            if (navigator.vibrate) navigator.vibrate(50);
             
-            // Анимация разблокировки
+            // Плавная анимация разблокировки
             lockScreen.classList.add('hidden');
             
-            // Показываем рабочий стол через 0.3 секунды
+            // Показываем рабочий стол
             setTimeout(() => {
-                console.log("Показываем рабочий стол...");
                 osContainer.style.display = 'block';
                 systemState.locked = false;
                 
-                console.log("Состояние разблокировано!");
+                console.log("✅ Устройство разблокировано!");
                 
-                // Вибрация при разблокировке
-                if (navigator.vibrate) {
-                    navigator.vibrate([50, 100, 50]);
-                }
+                // Вибрация успеха
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
                 
-                // Добавляем уведомление о разблокировке
-                addNotification("Разблокировано", "Устройство успешно разблокировано");
-                
-                // Фокус на рабочем столе
-                document.getElementById('home-screen').focus();
-            }, 300);
+                // Уведомление о разблокировке
+                addNotification("🔓 Разблокировано", "Устройство успешно разблокировано");
+            }, 500);
         }
 
         // Управление приложениями
         function openApp(appId) {
-            console.log("Открытие приложения:", appId);
+            console.log("🚀 Открытие приложения:", appId);
             
             // Закрываем все окна
             document.querySelectorAll('.app-window').forEach(win => {
@@ -1090,10 +1252,8 @@
                 }, 10);
             }
             
-            // Вибрация при открытии приложения
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
+            // Вибрация при открытии
+            if (navigator.vibrate) navigator.vibrate(20);
         }
 
         // Инициализация уведомлений
@@ -1109,18 +1269,34 @@
             document.getElementById('close-notifications').addEventListener('click', () => {
                 document.getElementById('notification-panel').classList.remove('show');
             });
+            
+            // Открытие шторки свайпом вниз
+            let notificationStartY = 0;
+            
+            document.getElementById('status-bar').addEventListener('touchstart', (e) => {
+                notificationStartY = e.touches[0].clientY;
+            });
+            
+            document.getElementById('status-bar').addEventListener('touchmove', (e) => {
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - notificationStartY;
+                
+                if (diff > 40 && !systemState.locked) {
+                    toggleNotifications();
+                }
+            });
         }
 
         function toggleNotifications() {
             const panel = document.getElementById('notification-panel');
-            const controlCenter = document.getElementById('control-center');
             
             if (panel.classList.contains('show')) {
                 panel.classList.remove('show');
             } else {
                 panel.classList.add('show');
-                controlCenter.classList.remove('show');
             }
+            
+            if (navigator.vibrate) navigator.vibrate(20);
         }
 
         function addNotification(title, text) {
@@ -1149,12 +1325,19 @@
             const list = document.getElementById('notifications-list');
             const item = document.createElement('div');
             item.className = 'notification-item';
+            
+            // Случайный цвет для границы
+            const colors = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#AF52DE'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            item.style.borderLeftColor = color;
+            
             item.innerHTML = `
                 <div class="notification-title">
                     ${title}
                     <span style="font-size: 0.85rem; color: #999;">${notification.time}</span>
                 </div>
                 <div class="notification-text">${text}</div>
+                <div class="notification-time">Только что</div>
             `;
             
             // Вставляем новое уведомление в начало
@@ -1167,72 +1350,6 @@
             // Ограничиваем количество уведомлений
             while (list.children.length > 10) {
                 list.removeChild(list.lastChild);
-            }
-        }
-
-        // Инициализация Control Center
-        function initControlCenter() {
-            // Открытие Control Center свайпом вниз от правого верхнего угла
-            let controlStartY = 0;
-            
-            document.getElementById('status-bar').addEventListener('touchstart', (e) => {
-                controlStartY = e.touches[0].clientY;
-            });
-            
-            document.getElementById('status-bar').addEventListener('touchmove', (e) => {
-                const currentY = e.touches[0].clientY;
-                const diff = currentY - controlStartY;
-                
-                // Если свайп вниз более 30px и не из левого края
-                if (diff > 30 && !systemState.locked && e.touches[0].clientX > 200) {
-                    toggleControlCenter();
-                }
-            });
-            
-            // Обработчики для кнопок Control Center
-            document.getElementById('control-wifi').addEventListener('click', () => {
-                systemState.wifi = !systemState.wifi;
-                const icon = document.querySelector('#control-wifi i');
-                if (systemState.wifi) {
-                    icon.style.color = '#007AFF';
-                    addNotification("Wi-Fi", "Включен");
-                } else {
-                    icon.style.color = '#999';
-                    addNotification("Wi-Fi", "Выключен");
-                }
-            });
-            
-            document.getElementById('control-bluetooth').addEventListener('click', () => {
-                systemState.bluetooth = !systemState.bluetooth;
-                const icon = document.querySelector('#control-bluetooth i');
-                if (systemState.bluetooth) {
-                    icon.style.color = '#007AFF';
-                    addNotification("Bluetooth", "Включен");
-                } else {
-                    icon.style.color = '#999';
-                    addNotification("Bluetooth", "Выключен");
-                }
-            });
-            
-            document.getElementById('control-flashlight').addEventListener('click', () => {
-                addNotification("Фонарик", "Переключен");
-            });
-            
-            document.getElementById('control-settings').addEventListener('click', () => {
-                openApp('settings');
-                document.getElementById('control-center').classList.remove('show');
-            });
-        }
-
-        function toggleControlCenter() {
-            const panel = document.getElementById('control-center');
-            const notifications = document.getElementById('notification-panel');
-            
-            if (panel.classList.contains('show')) {
-                panel.classList.remove('show');
-            } else {
-                panel.classList.add('show');
-                notifications.classList.remove('show');
             }
         }
 
@@ -1343,14 +1460,23 @@
 
             // Обработчики кнопок
             document.querySelectorAll('.calc-btn[data-num]').forEach(btn => {
-                btn.addEventListener('click', () => inputDigit(btn.dataset.num));
+                btn.addEventListener('click', () => {
+                    inputDigit(btn.dataset.num);
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
             });
 
             document.querySelectorAll('.calc-btn[data-op]').forEach(btn => {
-                btn.addEventListener('click', () => handleOperator(btn.dataset.op));
+                btn.addEventListener('click', () => {
+                    handleOperator(btn.dataset.op);
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
             });
 
-            document.querySelector('.calc-btn[data-num="."]').addEventListener('click', inputDecimal);
+            document.querySelector('.calc-btn[data-num="."]').addEventListener('click', () => {
+                inputDecimal();
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
             
             document.getElementById('calc-equals').addEventListener('click', () => {
                 const inputValue = parseFloat(display);
@@ -1362,9 +1488,13 @@
                     waitingForSecondOperand = true;
                     updateDisplay();
                 }
+                if (navigator.vibrate) navigator.vibrate(30);
             });
 
-            document.getElementById('calc-clear').addEventListener('click', resetCalculator);
+            document.getElementById('calc-clear').addEventListener('click', () => {
+                resetCalculator();
+                if (navigator.vibrate) navigator.vibrate(20);
+            });
             
             document.getElementById('calc-backspace').addEventListener('click', () => {
                 if (display.length > 1) {
@@ -1373,11 +1503,13 @@
                     display = '0';
                 }
                 updateDisplay();
+                if (navigator.vibrate) navigator.vibrate(10);
             });
             
             document.getElementById('calc-plusminus').addEventListener('click', () => {
                 display = (-parseFloat(display)).toString();
                 updateDisplay();
+                if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
@@ -1390,44 +1522,216 @@
             // Обработчики переключателей
             document.getElementById('wifi-toggle').addEventListener('change', (e) => {
                 systemState.wifi = e.target.checked;
-                addNotification("Wi-Fi", systemState.wifi ? "Включен" : "Выключен");
+                const toggle = e.target.nextElementSibling;
+                if (systemState.wifi) {
+                    toggle.style.background = '#34C759';
+                    toggle.querySelector('span').style.transform = 'translateX(22px)';
+                    addNotification("📶 Wi-Fi", "Включен");
+                } else {
+                    toggle.style.background = '#e5e5ea';
+                    toggle.querySelector('span').style.transform = 'translateX(0)';
+                    addNotification("📶 Wi-Fi", "Выключен");
+                }
+                if (navigator.vibrate) navigator.vibrate(20);
             });
             
             document.getElementById('bluetooth-toggle').addEventListener('change', (e) => {
                 systemState.bluetooth = e.target.checked;
-                addNotification("Bluetooth", systemState.bluetooth ? "Включен" : "Выключен");
+                const toggle = e.target.nextElementSibling;
+                if (systemState.bluetooth) {
+                    toggle.style.background = '#007AFF';
+                    toggle.querySelector('span').style.transform = 'translateX(22px)';
+                    addNotification("📱 Bluetooth", "Включен");
+                } else {
+                    toggle.style.background = '#e5e5ea';
+                    toggle.querySelector('span').style.transform = 'translateX(0)';
+                    addNotification("📱 Bluetooth", "Выключен");
+                }
+                if (navigator.vibrate) navigator.vibrate(20);
             });
             
             // Обработчики обоев
             document.querySelectorAll('.wallpaper-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const num = parseInt(btn.dataset.wallpaper);
+                btn.addEventListener('click', function() {
+                    const num = parseInt(this.dataset.wallpaper);
                     systemState.wallpaper = num;
                     const homeScreen = document.getElementById('home-screen');
                     homeScreen.classList.remove('wallpaper-1', 'wallpaper-2', 'wallpaper-3');
                     homeScreen.classList.add(`wallpaper-${num}`);
-                    addNotification("Обои", `Изменены на вариант ${num}`);
+                    addNotification("🎨 Обои", `Изменены на вариант ${num}`);
+                    if (navigator.vibrate) navigator.vibrate(30);
+                    
+                    // Анимация кнопки
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
                 });
             });
         }
 
-        // Добавляем обработчики для кнопок окон
+        // Инициализация заметок
+        function initNotes() {
+            // Загрузка сохраненных заметок
+            const savedNotes = localStorage.getItem('ios-notes');
+            if (savedNotes) {
+                systemState.notes = JSON.parse(savedNotes);
+            }
+            
+            // Обработчики кнопок
+            document.getElementById('save-note').addEventListener('click', function() {
+                const content = document.getElementById('note-content').value;
+                if (content.trim()) {
+                    const note = {
+                        id: Date.now(),
+                        content: content,
+                        date: new Date().toLocaleString()
+                    };
+                    systemState.notes.unshift(note);
+                    localStorage.setItem('ios-notes', JSON.stringify(systemState.notes));
+                    document.getElementById('note-content').value = '';
+                    addNotification("📝 Заметки", "Заметка сохранена");
+                    if (navigator.vibrate) navigator.vibrate(30);
+                    
+                    // Анимация кнопки
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                }
+            });
+            
+            document.getElementById('clear-note').addEventListener('click', function() {
+                document.getElementById('note-content').value = '';
+                if (navigator.vibrate) navigator.vibrate(20);
+                
+                // Анимация кнопки
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        }
+
+        // Инициализация музыкального плеера
+        function initMusicPlayer() {
+            const playBtn = document.querySelector('#music-window .fa-play').parentElement;
+            const progressBar = document.getElementById('music-progress');
+            
+            playBtn.addEventListener('click', function() {
+                systemState.music.playing = !systemState.music.playing;
+                const icon = this.querySelector('i');
+                
+                if (systemState.music.playing) {
+                    icon.className = 'fas fa-pause';
+                    addNotification("🎵 Музыка", "Воспроизведение начато");
+                    
+                    // Анимация прогресса
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        if (!systemState.music.playing) {
+                            clearInterval(interval);
+                            return;
+                        }
+                        progress += 0.5;
+                        if (progress > 100) {
+                            progress = 0;
+                            systemState.music.playing = false;
+                            icon.className = 'fas fa-play';
+                        }
+                        progressBar.style.width = `${progress}%`;
+                    }, 100);
+                } else {
+                    icon.className = 'fas fa-play';
+                    addNotification("🎵 Музыка", "Воспроизведение приостановлено");
+                }
+                
+                if (navigator.vibrate) navigator.vibrate(20);
+                
+                // Анимация кнопки
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        }
+
+        // Обработчики окон
         document.addEventListener('click', (e) => {
+            // Кнопка свернуть
             if (e.target.closest('.minimize-btn')) {
                 const app = e.target.closest('.app-window').dataset.app;
                 const window = document.getElementById(`${app}-window`);
                 if (window) window.classList.remove('active');
+                if (navigator.vibrate) navigator.vibrate(10);
             }
+            
+            // Кнопка развернуть
             if (e.target.closest('.maximize-btn')) {
                 const window = e.target.closest('.app-window');
                 window.classList.toggle('maximized');
+                if (navigator.vibrate) navigator.vibrate(10);
             }
+            
+            // Кнопка закрыть
             if (e.target.closest('.close-btn')) {
                 const app = e.target.closest('.app-window').dataset.app;
                 const window = document.getElementById(`${app}-window`);
                 if (window) window.classList.remove('active');
+                if (navigator.vibrate) navigator.vibrate(10);
             }
         });
+
+        // Перетаскивание окон
+        document.querySelectorAll('.window-header').forEach(header => {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            header.addEventListener('mousedown', startDrag);
+            header.addEventListener('touchstart', startDrag);
+
+            function startDrag(e) {
+                if (systemState.locked) return;
+                const window = header.parentElement;
+                isDragging = true;
+                const rect = window.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                startX = clientX - initialLeft;
+                startY = clientY - initialTop;
+                
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('touchmove', drag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchend', stopDrag);
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const newLeft = clientX - startX;
+                const newTop = clientY - startY;
+                
+                header.parentElement.style.left = `${newLeft}px`;
+                header.parentElement.style.top = `${newTop}px`;
+            }
+
+            function stopDrag() {
+                isDragging = false;
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('touchmove', drag);
+            }
+        });
+
+        console.log("✅ iOS 18 готова к использованию!");
     </script>
 </body>
 </html>
