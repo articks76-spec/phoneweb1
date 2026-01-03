@@ -1,1 +1,2137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WebOS - Мобильная ОС</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background-color: #000;
+            color: #333;
+            user-select: none;
+        }
+
+        /* Экран блокировки */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 60px 20px 40px;
+            z-index: 1000;
+            transition: transform 0.5s ease;
+        }
+
+        #lock-screen.hidden {
+            transform: translateY(-100%);
+        }
+
+        .lock-time {
+            font-size: 4.5rem;
+            font-weight: 300;
+            margin-top: 40px;
+        }
+
+        .lock-date {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .unlock-slider-container {
+            width: 90%;
+            max-width: 300px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            margin-bottom: 40px;
+        }
+
+        .unlock-slider {
+            width: 100%;
+            height: 50px;
+            border-radius: 25px;
+            background-color: rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .unlock-slider-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: width 0.1s;
+        }
+
+        .unlock-slider-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .lock-screen-footer {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Основной контейнер ОС */
+        #os-container {
+            width: 100%;
+            height: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            display: none;
+        }
+
+        /* Статус-бар */
+        #status-bar {
+            height: 30px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 100;
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-icon {
+            margin-left: 8px;
+        }
+
+        .battery-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .battery-level {
+            margin-left: 4px;
+            font-size: 0.7rem;
+        }
+
+        .notification-icon {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 0.6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Рабочий стол */
+        #home-screen {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 80px);
+            background-size: cover;
+            background-position: center;
+            padding: 20px 15px;
+            overflow-y: auto;
+            transition: background-image 0.5s ease;
+        }
+
+        .wallpaper-1 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjgwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA3Q0VGOyIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBGRkZGOyIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iODAwIiBmaWxsPSJ1cmwoI2cpIiAvPgo8L3N2Zz4=');
+        }
+
+        .wallpaper-2 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjgwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRjAwRkY7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI4MDAiIGZpbGw9InVybCgjZykiIC8+Cjwvc3ZnPg==');
+        }
+
+        .wallpaper-3 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjgwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRjk2MDA7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRjAwRkY7IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI4MDAiIGZpbGw9InVybCgjZykiIC8+Cjwvc3ZnPg==');
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        #app-search {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 25px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 5px;
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .app-icon:hover, .app-icon:active {
+            transform: scale(1.05);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .app-icon i {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .app-icon span {
+            font-size: 0.7rem;
+            color: white;
+            text-align: center;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Панель навигации */
+        #nav-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .nav-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #007AFF;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 122, 255, 0.3);
+            transition: transform 0.1s;
+        }
+
+        .nav-button:active {
+            transform: scale(0.95);
+        }
+
+        .minimized-apps {
+            display: flex;
+            gap: 5px;
+            flex-grow: 1;
+            padding: 0 10px;
+            overflow-x: auto;
+        }
+
+        .minimized-app {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* Окна приложений */
+        .app-window {
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            width: 360px;
+            height: 600px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+            overflow: hidden;
+            resize: both;
+            min-width: 250px;
+            min-height: 300px;
+        }
+
+        .app-window.active {
+            display: flex;
+            z-index: 20;
+        }
+
+        .app-window.maximized {
+            width: 100% !important;
+            height: calc(100% - 80px) !important;
+            top: 30px !important;
+            left: 0 !important;
+            border-radius: 0;
+        }
+
+        .window-header {
+            height: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #ddd;
+            cursor: move;
+            user-select: none;
+        }
+
+        .window-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .window-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .minimize-btn {
+            background-color: #FFBD2E;
+            color: #333;
+        }
+
+        .maximize-btn {
+            background-color: #28CA42;
+            color: white;
+        }
+
+        .close-btn {
+            background-color: #FF5F57;
+            color: white;
+        }
+
+        .window-btn:hover {
+            opacity: 0.9;
+        }
+
+        .app-content {
+            flex-grow: 1;
+            overflow: auto;
+            padding: 15px;
+        }
+
+        /* Панель уведомлений */
+        #notification-panel {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 0 0 20px 20px;
+            padding: 20px;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            z-index: 150;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #notification-panel.show {
+            transform: translateY(0);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .notification-item {
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007AFF;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .notification-text {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Диалог выключения */
+        #shutdown-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #shutdown-dialog.show {
+            display: flex;
+        }
+
+        .shutdown-content {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .shutdown-options {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+        }
+
+        .shutdown-btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .shutdown-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .power-off {
+            background-color: #FF3B30;
+            color: white;
+        }
+
+        .reboot {
+            background-color: #007AFF;
+            color: white;
+        }
+
+        .cancel-shutdown {
+            background-color: #8E8E93;
+            color: white;
+        }
+
+        /* Стили для конкретных приложений */
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #007AFF;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .volume-slider {
+            width: 60%;
+        }
+
+        .calculator {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .calculator-display {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: right;
+            font-size: 2rem;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            min-height: 80px;
+            word-break: break-all;
+            overflow: hidden;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .calc-btn {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calc-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .calc-btn.operator {
+            background-color: #FF9500;
+            color: white;
+        }
+
+        .calc-btn.clear {
+            background-color: #FF3B30;
+            color: white;
+        }
+
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+
+        .digital-clock {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin: 20px 0;
+        }
+
+        .analog-clock {
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .timer-controls, .alarm-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .timer-display, .alarm-display {
+            font-size: 2rem;
+            margin: 15px 0;
+        }
+
+        .notes-app {
+            display: flex;
+            height: 100%;
+        }
+
+        .notes-list {
+            width: 40%;
+            border-right: 1px solid #eee;
+            overflow-y: auto;
+        }
+
+        .notes-editor {
+            width: 60%;
+            padding-left: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .note-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .note-item:hover, .note-item.active {
+            background-color: #f0f0f0;
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-preview {
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #note-content {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: inherit;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .weather-info {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .weather-icon {
+            font-size: 4rem;
+            margin: 20px 0;
+            color: #FF9500;
+        }
+
+        .temperature {
+            font-size: 3rem;
+            font-weight: 300;
+        }
+
+        .weather-desc {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .player-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #007AFF;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #007AFF;
+            width: 30%;
+        }
+
+        .file-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        #snake-canvas {
+            background-color: #000;
+            border-radius: 5px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .browser-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #browser-url {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #browser-go {
+            padding: 10px 15px;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #browser-iframe {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .calendar {
+            width: 100%;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .calendar-day.today {
+            background-color: #007AFF;
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 400px) {
+            #os-container {
+                border-radius: 0;
+                max-width: 100%;
+            }
+            
+            .app-window {
+                width: calc(100% - 40px);
+            }
+        }
+
+        /* Темная тема */
+        body.dark-theme {
+            background-color: #000;
+        }
+
+        body.dark-theme #os-container {
+            background-color: #000;
+            color: #fff;
+        }
+
+        body.dark-theme #home-screen {
+            background-color: #1c1c1e;
+        }
+
+        body.dark-theme .app-window {
+            background-color: #1c1c1e;
+            color: #fff;
+        }
+
+        body.dark-theme .window-header {
+            background-color: #2c2c2e;
+            border-bottom: 1px solid #444;
+        }
+
+        body.dark-theme #nav-bar {
+            background-color: rgba(44, 44, 46, 0.9);
+        }
+
+        body.dark-theme .app-icon {
+            background-color: rgba(60, 60, 67, 0.3);
+        }
+
+        body.dark-theme .notification-item {
+            background-color: rgba(60, 60, 67, 0.3);
+        }
+
+        body.dark-theme .note-item:hover, 
+        body.dark-theme .note-item.active {
+            background-color: #2c2c2e;
+        }
+
+        body.dark-theme #note-content {
+            background-color: #2c2c2e;
+            color: white;
+            border-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <!-- Экран блокировки -->
+    <div id="lock-screen">
+        <div class="lock-time" id="lock-time">00:00</div>
+        <div class="lock-date" id="lock-date">Понедельник, 1 января</div>
+        <div class="unlock-slider-container">
+            <div class="unlock-slider" id="unlock-slider">
+                <div class="unlock-slider-track" id="unlock-slider-track"></div>
+                <div class="unlock-slider-text">Свайпните, чтобы разблокировать</div>
+            </div>
+        </div>
+        <div class="lock-screen-footer">WebOS</div>
+    </div>
+
+    <!-- Основной контейнер ОС -->
+    <div id="os-container">
+        <!-- Статус-бар -->
+        <div id="status-bar">
+            <div class="status-left">
+                <span id="current-time">12:00</span>
+                <div class="status-icon">
+                    <i class="fas fa-signal"></i>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-icon">
+                    <i class="fas fa-wifi"></i>
+                </div>
+                <div class="status-icon battery-container">
+                    <i class="fas fa-battery-full" id="battery-icon"></i>
+                    <span class="battery-level" id="battery-level">100%</span>
+                </div>
+                <div class="status-icon notification-icon" id="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge" id="notification-badge">1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Панель уведомлений -->
+        <div id="notification-panel">
+            <div class="notification-header">
+                <h3>Уведомления</h3>
+                <i class="fas fa-times" id="close-notifications"></i>
+            </div>
+            <div id="notifications-list">
+                <div class="notification-item">
+                    <div class="notification-title">Добро пожаловать в WebOS!</div>
+                    <div class="notification-text">Система успешно загружена. Нажмите на значок приложения, чтобы начать.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Рабочий стол -->
+        <div id="home-screen" class="wallpaper-1">
+            <div class="search-container">
+                <input type="text" id="app-search" placeholder="Поиск приложений...">
+            </div>
+            <div class="apps-grid" id="apps-grid">
+                <!-- Значки приложений будут добавлены через JavaScript -->
+            </div>
+        </div>
+
+        <!-- Панель навигации -->
+        <div id="nav-bar">
+            <div class="minimized-apps" id="minimized-apps">
+                <!-- Свернутые приложения появятся здесь -->
+            </div>
+            <div class="nav-button" id="home-button">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-button" id="power-button">
+                <i class="fas fa-power-off"></i>
+            </div>
+        </div>
+
+        <!-- Окна приложений -->
+        <!-- Окно настроек -->
+        <div class="app-window" id="settings-window" data-app="settings">
+            <div class="window-header">
+                <div class="window-title">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </div>
+                <div class="window-controls">
+                    <div class="window-btn minimize-btn" data-window="settings">
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="window-btn maximize-btn" data-window="settings">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <div class="window-btn close-btn" data-window="settings">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content">
+                <div class="settings-option">
+                    <span>Wi-Fi</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="wifi-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <span>Bluetooth</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="bluetooth-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <span>Авиарежим</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="airplane-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <span>Громкость</span>
+                    <input type="range" min="0" max="100" value="50" class="volume-slider" id="volume-slider">
+                </div>
+                <div class="settings-option">
+                    <span>Тема</span>
+                    <select id="theme-select">
+                        <option value="light">Светлая</option>
+                        <option value="dark">Темная</option>
+                    </select>
+                </div>
+                <div class="settings-option">
+                    <span>Обои</span>
+                    <div>
+                        <button class="wallpaper-btn" data-wallpaper="1">1</button>
+                        <button class="wallpaper-btn" data-wallpaper="2">2</button>
+                        <button class="wallpaper-btn" data-wallpaper="3">3</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Окно калькулятора -->
+        <div class="app-window" id="calculator-window" data-app="calculator">
+            <div class="window-header">
+                <div class="window-title">
+                    <i class="fas fa-calculator"></i>
+                    <span>Калькулятор</span>
+                </div>
+                <div class="window-controls">
+                    <div class="window-btn minimize-btn" data-window="calculator">
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="window-btn maximize-btn" data-window="calculator">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <div class="window-btn close-btn" data-window="calculator">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content">
+                <div class="calculator">
+                    <div class="calculator-display" id="calc-display">0</div>
+                    <div class="calculator-buttons">
+                        <button class="calc-btn clear" id="calc-clear">C</button>
+                        <button class="calc-btn" id="calc-backspace">⌫</button>
+                        <button class="calc-btn operator" data-op="%">%</button>
+                        <button class="calc-btn operator" data-op="/">/</button>
+                        
+                        <button class="calc-btn" data-num="7">7</button>
+                        <button class="calc-btn" data-num="8">8</button>
+                        <button class="calc-btn" data-num="9">9</button>
+                        <button class="calc-btn operator" data-op="*">×</button>
+                        
+                        <button class="calc-btn" data-num="4">4</button>
+                        <button class="calc-btn" data-num="5">5</button>
+                        <button class="calc-btn" data-num="6">6</button>
+                        <button class="calc-btn operator" data-op="-">−</button>
+                        
+                        <button class="calc-btn" data-num="1">1</button>
+                        <button class="calc-btn" data-num="2">2</button>
+                        <button class="calc-btn" data-num="3">3</button>
+                        <button class="calc-btn operator" data-op="+">+</button>
+                        
+                        <button class="calc-btn" id="calc-plusminus">±</button>
+                        <button class="calc-btn" data-num="0">0</button>
+                        <button class="calc-btn" data-num=".">.</button>
+                        <button class="calc-btn operator" id="calc-equals">=</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Окно часов -->
+        <div class="app-window" id="clock-window" data-app="clock">
+            <div class="window-header">
+                <div class="window-title">
+                    <i class="fas fa-clock"></i>
+                    <span>Часы</span>
+                </div>
+                <div class="window-controls">
+                    <div class="window-btn minimize-btn" data-window="clock">
+                        <i class="fas fa-minus"></i>
+                    </div>
+                    <div class="window-btn maximize-btn" data-window="clock">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <div class="window-btn close-btn" data-window="clock">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content">
+                <div class="clock-container">
+                    <div class="digital-clock" id="digital-clock">00:00:00</div>
+                    <canvas class="analog-clock" id="analog-clock" width="200" height="200"></canvas>
+                    
+                    <h3>Таймер</h3>
+                    <div class="timer-display" id="timer-display">00:00</div>
+                    <div class="timer-controls">
+                        <button id="timer-start">Старт</button>
+                        <button id="timer-pause">Пауза</button>
+                        <button id="timer-reset">Сброс</button>
+                    </div>
+                    
+                    <h3>Будильник</h3>
+                    <div class="alarm-controls">
+                        <input type="time" id="alarm-time" value="07:00">
+                        <button id="alarm-toggle">Включить</button>
+                    </div>
+                    <div id="alarm-status">Будильник выключен</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Остальные окна приложений (сокращено для экономии места) -->
+        <!-- Заметки, погода, музыка, файлы, змейка, браузер, календарь -->
+        
+        <!-- Диалог выключения -->
+        <div id="shutdown-dialog">
+            <div class="shutdown-content">
+                <h2>Выключение</h2>
+                <p>Выберите действие:</p>
+                <div class="shutdown-options">
+                    <div class="shutdown-btn power-off" id="power-off-btn">Выключить</div>
+                    <div class="shutdown-btn reboot" id="reboot-btn">Перезагрузить</div>
+                    <div class="shutdown-btn cancel-shutdown" id="cancel-shutdown-btn">Отмена</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebOS - Симулятор операционной системы
+        // Основной JavaScript код
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация приложений
+            initApps();
+            
+            // Инициализация времени и даты
+            initTime();
+            
+            // Инициализация экрана блокировки
+            initLockScreen();
+            
+            // Инициализация системы уведомлений
+            initNotifications();
+            
+            // Инициализация окон приложений
+            initAppWindows();
+            
+            // Инициализация системных функций
+            initSystemFunctions();
+            
+            // Инициализация поиска приложений
+            initAppSearch();
+            
+            // Инициализация батареи и Wi-Fi
+            initStatusIcons();
+            
+            // Загружаем сохраненные настройки
+            loadSettings();
+        });
+
+        // Основные переменные состояния системы
+        const state = {
+            activeWindow: null,
+            minimizedApps: [],
+            notifications: [
+                { id: 1, title: "Добро пожаловать в WebOS!", text: "Система успешно загружена. Нажмите на значок приложения, чтобы начать.", read: false }
+            ],
+            wallpaper: 1,
+            theme: 'light',
+            volume: 50,
+            wifi: true,
+            bluetooth: false,
+            airplaneMode: false,
+            batteryLevel: 85,
+            isCharging: false,
+            notes: []
+        };
+
+        // Инициализация приложений
+        function initApps() {
+            const apps = [
+                { id: 'settings', name: 'Настройки', icon: 'cog', color: '#8E8E93' },
+                { id: 'calculator', name: 'Калькулятор', icon: 'calculator', color: '#FF9500' },
+                { id: 'clock', name: 'Часы', icon: 'clock', color: '#007AFF' },
+                { id: 'notes', name: 'Заметки', icon: 'sticky-note', color: '#FFCC00' },
+                { id: 'weather', name: 'Погода', icon: 'cloud-sun', color: '#5AC8FA' },
+                { id: 'music', name: 'Музыка', icon: 'music', color: '#FF2D55' },
+                { id: 'files', name: 'Файлы', icon: 'folder', color: '#FF9500' },
+                { id: 'snake', name: 'Змейка', icon: 'gamepad', color: '#4CD964' },
+                { id: 'browser', name: 'Браузер', icon: 'globe', color: '#007AFF' },
+                { id: 'calendar', name: 'Календарь', icon: 'calendar', color: '#FF3B30' }
+            ];
+
+            const appsGrid = document.getElementById('apps-grid');
+            
+            apps.forEach(app => {
+                const appElement = document.createElement('div');
+                appElement.className = 'app-icon';
+                appElement.dataset.app = app.id;
+                appElement.innerHTML = `
+                    <i class="fas fa-${app.icon}" style="color: ${app.color}"></i>
+                    <span>${app.name}</span>
+                `;
+                
+                appElement.addEventListener('click', function() {
+                    openApp(app.id);
+                    // Вибрация при клике, если поддерживается
+                    if (navigator.vibrate) navigator.vibrate(10);
+                });
+                
+                appsGrid.appendChild(appElement);
+            });
+        }
+
+        // Инициализация времени и даты
+        function initTime() {
+            function updateTime() {
+                const now = new Date();
+                
+                // Время для статус-бара
+                const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('current-time').textContent = timeStr;
+                
+                // Время для экрана блокировки
+                const lockTimeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('lock-time').textContent = lockTimeStr;
+                
+                // Дата для экрана блокировки
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateStr = now.toLocaleDateString('ru-RU', options);
+                document.getElementById('lock-date').textContent = dateStr;
+                
+                // Обновление цифровых часов в приложении
+                const digitalClock = document.getElementById('digital-clock');
+                if (digitalClock) {
+                    const fullTimeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    digitalClock.textContent = fullTimeStr;
+                }
+                
+                // Обновление аналоговых часов
+                updateAnalogClock(now);
+                
+                // Проверка будильника
+                checkAlarm(now);
+            }
+            
+            // Обновляем время сразу и каждую секунду
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        // Обновление аналоговых часов
+        function updateAnalogClock(now) {
+            const canvas = document.getElementById('analog-clock');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const radius = canvas.width / 2;
+            
+            // Очистка canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Рисуем циферблат
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            
+            // Рисуем цифры
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (let i = 1; i <= 12; i++) {
+                const angle = (i - 3) * (Math.PI * 2) / 12;
+                const x = radius + Math.cos(angle) * (radius - 20);
+                const y = radius + Math.sin(angle) * (radius - 20);
+                ctx.fillText(i.toString(), x, y);
+            }
+            
+            // Получаем время
+            const hour = now.getHours() % 12;
+            const minute = now.getMinutes();
+            const second = now.getSeconds();
+            
+            // Часовая стрелка
+            const hourAngle = (hour + minute / 60) * (Math.PI * 2) / 12 - Math.PI / 2;
+            drawHand(ctx, radius, hourAngle, radius * 0.5, 6, '#333');
+            
+            // Минутная стрелка
+            const minuteAngle = (minute + second / 60) * (Math.PI * 2) / 60 - Math.PI / 2;
+            drawHand(ctx, radius, minuteAngle, radius * 0.7, 4, '#333');
+            
+            // Секундная стрелка
+            const secondAngle = second * (Math.PI * 2) / 60 - Math.PI / 2;
+            drawHand(ctx, radius, secondAngle, radius * 0.8, 2, '#FF3B30');
+            
+            // Центральная точка
+            ctx.beginPath();
+            ctx.arc(radius, radius, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+        }
+
+        function drawHand(ctx, radius, angle, length, width, color) {
+            ctx.beginPath();
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = color;
+            ctx.moveTo(radius, radius);
+            ctx.lineTo(
+                radius + Math.cos(angle) * length,
+                radius + Math.sin(angle) * length
+            );
+            ctx.stroke();
+        }
+
+        // Инициализация экрана блокировки
+        function initLockScreen() {
+            const unlockSlider = document.getElementById('unlock-slider');
+            const unlockSliderTrack = document.getElementById('unlock-slider-track');
+            let isDragging = false;
+            let startX = 0;
+            let sliderWidth = unlockSlider.offsetWidth;
+            
+            unlockSlider.addEventListener('mousedown', startDrag);
+            unlockSlider.addEventListener('touchstart', startDrag);
+            
+            function startDrag(e) {
+                isDragging = true;
+                startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                sliderWidth = unlockSlider.offsetWidth;
+                
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('touchmove', onDrag);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchend', stopDrag);
+            }
+            
+            function onDrag(e) {
+                if (!isDragging) return;
+                
+                const currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                const diff = currentX - startX;
+                let percent = (diff / sliderWidth) * 100;
+                
+                // Ограничиваем процент от 0 до 100
+                percent = Math.max(0, Math.min(100, percent));
+                
+                unlockSliderTrack.style.width = percent + '%';
+                
+                // Если пользователь сдвинул на 80% или больше, разблокируем
+                if (percent >= 80) {
+                    unlockDevice();
+                }
+            }
+            
+            function stopDrag() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                unlockSliderTrack.style.width = '0%';
+                
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchend', stopDrag);
+            }
+            
+            function unlockDevice() {
+                const lockScreen = document.getElementById('lock-screen');
+                const osContainer = document.getElementById('os-container');
+                
+                // Анимация разблокировки
+                lockScreen.classList.add('hidden');
+                
+                // Показываем ОС через 0.5 секунды
+                setTimeout(() => {
+                    osContainer.style.display = 'block';
+                    // Вибрация при разблокировке
+                    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                }, 500);
+            }
+        }
+
+        // Инициализация системы уведомлений
+        function initNotifications() {
+            const notificationIcon = document.getElementById('notification-icon');
+            const notificationPanel = document.getElementById('notification-panel');
+            const closeNotifications = document.getElementById('close-notifications');
+            
+            // Клик по иконке уведомлений
+            notificationIcon.addEventListener('click', function() {
+                notificationPanel.classList.toggle('show');
+                // Отмечаем уведомления как прочитанные
+                markNotificationsAsRead();
+            });
+            
+            // Закрытие панели уведомлений
+            closeNotifications.addEventListener('click', function() {
+                notificationPanel.classList.remove('show');
+            });
+            
+            // Обновление бейджа уведомлений
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge() {
+            const unreadCount = state.notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('notification-badge');
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function markNotificationsAsRead() {
+            state.notifications.forEach(n => n.read = true);
+            updateNotificationBadge();
+        }
+
+        function addNotification(title, text) {
+            const id = state.notifications.length + 1;
+            state.notifications.unshift({
+                id,
+                title,
+                text,
+                read: false
+            });
+            
+            updateNotificationBadge();
+            
+            // Обновляем список уведомлений
+            const notificationsList = document.getElementById('notifications-list');
+            if (notificationsList) {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                notificationItem.innerHTML = `
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-text">${text}</div>
+                `;
+                notificationsList.insertBefore(notificationItem, notificationsList.firstChild);
+            }
+        }
+
+        // Инициализация окон приложений
+        function initAppWindows() {
+            // Обработчики для кнопок окон
+            document.querySelectorAll('.window-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const windowId = this.dataset.window;
+                    const action = this.classList.contains('minimize-btn') ? 'minimize' :
+                                  this.classList.contains('maximize-btn') ? 'maximize' : 'close';
+                    
+                    handleWindowAction(windowId, action);
+                });
+            });
+            
+            // Перетаскивание окон
+            document.querySelectorAll('.window-header').forEach(header => {
+                makeDraggable(header.parentElement, header);
+            });
+            
+            // Обработчик для кнопки домой
+            document.getElementById('home-button').addEventListener('click', function() {
+                // Сворачиваем все окна
+                document.querySelectorAll('.app-window.active').forEach(window => {
+                    const appId = window.dataset.app;
+                    minimizeApp(appId);
+                });
+                
+                // Вибрация
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        }
+
+        function handleWindowAction(windowId, action) {
+            const windowElement = document.getElementById(`${windowId}-window`);
+            
+            switch (action) {
+                case 'minimize':
+                    minimizeApp(windowId);
+                    break;
+                case 'maximize':
+                    windowElement.classList.toggle('maximized');
+                    break;
+                case 'close':
+                    closeApp(windowId);
+                    break;
+            }
+            
+            // Вибрация при взаимодействии с окном
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        function makeDraggable(element, handle) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            handle.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                
+                // Получаем позицию курсора при нажатии
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                // Делаем окно активным
+                makeWindowActive(element.dataset.app);
+                
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                
+                // Вычисляем новую позицию курсора
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                // Устанавливаем новую позицию окна
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // Функции для работы с приложениями
+        function openApp(appId) {
+            // Скрываем все окна
+            document.querySelectorAll('.app-window').forEach(window => {
+                window.classList.remove('active');
+            });
+            
+            // Показываем выбранное окно
+            const windowElement = document.getElementById(`${appId}-window`);
+            if (windowElement) {
+                windowElement.classList.add('active');
+                makeWindowActive(appId);
+                
+                // Инициализация приложения при открытии
+                initAppContent(appId);
+            }
+        }
+
+        function closeApp(appId) {
+            const windowElement = document.getElementById(`${appId}-window`);
+            if (windowElement) {
+                windowElement.classList.remove('active');
+                windowElement.classList.remove('maximized');
+                
+                // Удаляем из списка свернутых приложений
+                const index = state.minimizedApps.indexOf(appId);
+                if (index > -1) {
+                    state.minimizedApps.splice(index, 1);
+                    updateMinimizedApps();
+                }
+                
+                // Если закрыли активное окно, активируем другое окно
+                if (state.activeWindow === appId) {
+                    state.activeWindow = null;
+                }
+            }
+        }
+
+        function minimizeApp(appId) {
+            const windowElement = document.getElementById(`${appId}-window`);
+            if (windowElement) {
+                windowElement.classList.remove('active');
+                
+                // Добавляем в список свернутых приложений
+                if (!state.minimizedApps.includes(appId)) {
+                    state.minimizedApps.push(appId);
+                    updateMinimizedApps();
+                }
+                
+                // Если свернули активное окно, сбрасываем активное окно
+                if (state.activeWindow === appId) {
+                    state.activeWindow = null;
+                }
+            }
+        }
+
+        function makeWindowActive(appId) {
+            // Сначала снимаем активность со всех окон
+            document.querySelectorAll('.app-window').forEach(window => {
+                window.style.zIndex = 10;
+            });
+            
+            // Делаем выбранное окно активным (поверх других)
+            const windowElement = document.getElementById(`${appId}-window`);
+            if (windowElement) {
+                windowElement.style.zIndex = 20;
+                state.activeWindow = appId;
+            }
+        }
+
+        function updateMinimizedApps() {
+            const container = document.getElementById('minimized-apps');
+            container.innerHTML = '';
+            
+            state.minimizedApps.forEach(appId => {
+                const appElement = document.createElement('div');
+                appElement.className = 'minimized-app';
+                appElement.textContent = appId.charAt(0).toUpperCase();
+                appElement.title = appId;
+                
+                appElement.addEventListener('click', function() {
+                    openApp(appId);
+                    
+                    // Удаляем из списка свернутых
+                    const index = state.minimizedApps.indexOf(appId);
+                    if (index > -1) {
+                        state.minimizedApps.splice(index, 1);
+                        updateMinimizedApps();
+                    }
+                });
+                
+                container.appendChild(appElement);
+            });
+        }
+
+        // Инициализация контента приложений
+        function initAppContent(appId) {
+            switch (appId) {
+                case 'calculator':
+                    initCalculator();
+                    break;
+                case 'clock':
+                    initClockApp();
+                    break;
+                case 'notes':
+                    initNotesApp();
+                    break;
+                case 'weather':
+                    initWeatherApp();
+                    break;
+                case 'music':
+                    initMusicApp();
+                    break;
+                case 'files':
+                    initFilesApp();
+                    break;
+                case 'snake':
+                    initSnakeGame();
+                    break;
+                case 'browser':
+                    initBrowser();
+                    break;
+                case 'calendar':
+                    initCalendar();
+                    break;
+                case 'settings':
+                    initSettings();
+                    break;
+            }
+        }
+
+        // Калькулятор
+        function initCalculator() {
+            let currentDisplay = '0';
+            let previousValue = null;
+            let operation = null;
+            let resetDisplay = false;
+            
+            const display = document.getElementById('calc-display');
+            
+            // Обработчики для цифровых кнопок
+            document.querySelectorAll('[data-num]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const num = this.dataset.num;
+                    
+                    if (currentDisplay === '0' || resetDisplay) {
+                        currentDisplay = num;
+                        resetDisplay = false;
+                    } else {
+                        currentDisplay += num;
+                    }
+                    
+                    display.textContent = currentDisplay;
+                });
+            });
+            
+            // Обработчики для операторов
+            document.querySelectorAll('[data-op]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const op = this.dataset.op;
+                    
+                    if (previousValue === null) {
+                        previousValue = parseFloat(currentDisplay);
+                    } else if (operation && !resetDisplay) {
+                        previousValue = calculate(previousValue, parseFloat(currentDisplay), operation);
+                        display.textContent = previousValue;
+                    }
+                    
+                    operation = op;
+                    resetDisplay = true;
+                });
+            });
+            
+            // Кнопка равно
+            document.getElementById('calc-equals').addEventListener('click', function() {
+                if (previousValue !== null && operation) {
+                    currentDisplay = calculate(previousValue, parseFloat(currentDisplay), operation).toString();
+                    display.textContent = currentDisplay;
+                    
+                    previousValue = null;
+                    operation = null;
+                    resetDisplay = true;
+                }
+            });
+            
+            // Кнопка очистки
+            document.getElementById('calc-clear').addEventListener('click', function() {
+                currentDisplay = '0';
+                previousValue = null;
+                operation = null;
+                display.textContent = currentDisplay;
+            });
+            
+            // Кнопка backspace
+            document.getElementById('calc-backspace').addEventListener('click', function() {
+                if (currentDisplay.length > 1) {
+                    currentDisplay = currentDisplay.slice(0, -1);
+                } else {
+                    currentDisplay = '0';
+                }
+                display.textContent = currentDisplay;
+            });
+            
+            // Кнопка +/- 
+            document.getElementById('calc-plusminus').addEventListener('click', function() {
+                currentDisplay = (parseFloat(currentDisplay) * -1).toString();
+                display.textContent = currentDisplay;
+            });
+            
+            function calculate(a, b, op) {
+                switch (op) {
+                    case '+': return a + b;
+                    case '-': return a - b;
+                    case '*': return a * b;
+                    case '/': return a / b;
+                    case '%': return a % b;
+                    default: return b;
+                }
+            }
+        }
+
+        // Часы с таймером и будильником
+        function initClockApp() {
+            let timerInterval = null;
+            let timerSeconds = 0;
+            let alarmTime = "07:00";
+            let alarmActive = false;
+            
+            // Таймер: старт
+            document.getElementById('timer-start').addEventListener('click', function() {
+                if (timerInterval) clearInterval(timerInterval);
+                
+                timerInterval = setInterval(function() {
+                    timerSeconds++;
+                    updateTimerDisplay();
+                }, 1000);
+            });
+            
+            // Таймер: пауза
+            document.getElementById('timer-pause').addEventListener('click', function() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            });
+            
+            // Таймер: сброс
+            document.getElementById('timer-reset').addEventListener('click', function() {
+                if (timerInterval) clearInterval(timerInterval);
+                timerSeconds = 0;
+                updateTimerDisplay();
+                timerInterval = null;
+            });
+            
+            // Будильник: установка времени
+            document.getElementById('alarm-time').addEventListener('change', function() {
+                alarmTime = this.value;
+            });
+            
+            // Будильник: включение/выключение
+            document.getElementById('alarm-toggle').addEventListener('click', function() {
+                alarmActive = !alarmActive;
+                this.textContent = alarmActive ? "Выключить" : "Включить";
+                document.getElementById('alarm-status').textContent = 
+                    alarmActive ? `Будильник установлен на ${alarmTime}` : "Будильник выключен";
+                
+                // Добавляем уведомление
+                addNotification("Будильник", alarmActive ? 
+                    `Будильник установлен на ${alarmTime}` : 
+                    "Будильник выключен");
+            });
+            
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timerSeconds / 60);
+                const seconds = timerSeconds % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('timer-display').textContent = display;
+            }
+        }
+
+        // Проверка будильника
+        function checkAlarm(now) {
+            // В реальной реализации здесь была бы проверка будильника
+            // Для демо просто пропускаем
+        }
+
+        // Приложение "Заметки" (упрощенная версия)
+        function initNotesApp() {
+            // Загружаем заметки из localStorage
+            const savedNotes = localStorage.getItem('webos-notes');
+            if (savedNotes) {
+                state.notes = JSON.parse(savedNotes);
+            } else {
+                state.notes = [
+                    { id: 1, title: "Приветствие", content: "Добро пожаловать в WebOS!", date: new Date().toLocaleDateString() },
+                    { id: 2, title: "Задачи", content: "1. Изучить WebOS\n2. Настроить систему\n3. Создать заметки", date: new Date().toLocaleDateString() }
+                ];
+            }
+            
+            // В реальной реализации здесь был бы код для отображения и редактирования заметок
+            console.log("Приложение 'Заметки' загружено. Заметок:", state.notes.length);
+        }
+
+        // Приложение "Погода" (упрощенная версия)
+        function initWeatherApp() {
+            // Имитация данных о погоде
+            const weatherData = {
+                city: "Москва",
+                temperature: Math.floor(Math.random() * 15) + 10, // 10-25°C
+                condition: ["солнечно", "облачно", "дождь"][Math.floor(Math.random() * 3)],
+                icon: ["sun", "cloud", "cloud-rain"][Math.floor(Math.random() * 3)]
+            };
+            
+            // В реальной реализации здесь был бы код для отображения погоды
+            console.log("Погода в", weatherData.city, ":", weatherData.temperature, "°C,", weatherData.condition);
+        }
+
+        // Музыкальный плеер (упрощенная версия)
+        function initMusicApp() {
+            // В реальной реализации здесь был бы код для управления аудио
+            console.log("Музыкальный плеер инициализирован");
+        }
+
+        // Файловый менеджер (упрощенная версия)
+        function initFilesApp() {
+            // В реальной реализации здесь был бы код для работы с файлами
+            console.log("Файловый менеджер инициализирован");
+        }
+
+        // Игра "Змейка" (упрощенная версия)
+        function initSnakeGame() {
+            // В реальной реализации здесь был бы код игры "Змейка"
+            console.log("Игра 'Змейка' инициализирована");
+        }
+
+        // Браузер (упрощенная версия)
+        function initBrowser() {
+            // В реальной реализации здесь был бы код для работы с iframe
+            console.log("Браузер инициализирован");
+        }
+
+        // Календарь (упрощенная версия)
+        function initCalendar() {
+            // В реальной реализации здесь был бы код для отображения календаря
+            console.log("Календарь инициализирован");
+        }
+
+        // Настройки
+        function initSettings() {
+            // Загружаем сохраненные значения
+            document.getElementById('wifi-toggle').checked = state.wifi;
+            document.getElementById('bluetooth-toggle').checked = state.bluetooth;
+            document.getElementById('airplane-toggle').checked = state.airplaneMode;
+            document.getElementById('volume-slider').value = state.volume;
+            document.getElementById('theme-select').value = state.theme;
+            
+            // Обработчики изменений
+            document.getElementById('wifi-toggle').addEventListener('change', function() {
+                state.wifi = this.checked;
+                saveSettings();
+                addNotification("Wi-Fi", this.checked ? "Wi-Fi включен" : "Wi-Fi выключен");
+            });
+            
+            document.getElementById('bluetooth-toggle').addEventListener('change', function() {
+                state.bluetooth = this.checked;
+                saveSettings();
+                addNotification("Bluetooth", this.checked ? "Bluetooth включен" : "Bluetooth выключен");
+            });
+            
+            document.getElementById('airplane-toggle').addEventListener('change', function() {
+                state.airplaneMode = this.checked;
+                saveSettings();
+                addNotification("Авиарежим", this.checked ? "Авиарежим включен" : "Авиарежим выключен");
+            });
+            
+            document.getElementById('volume-slider').addEventListener('input', function() {
+                state.volume = this.value;
+                saveSettings();
+            });
+            
+            document.getElementById('theme-select').addEventListener('change', function() {
+                state.theme = this.value;
+                document.body.className = this.value === 'dark' ? 'dark-theme' : '';
+                saveSettings();
+                addNotification("Тема", this.value === 'dark' ? "Темная тема включена" : "Светлая тема включена");
+            });
+            
+            // Обои
+            document.querySelectorAll('.wallpaper-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const wallpaperNum = this.dataset.wallpaper;
+                    changeWallpaper(wallpaperNum);
+                });
+            });
+        }
+
+        // Инициализация системных функций
+        function initSystemFunctions() {
+            // Кнопка питания
+            document.getElementById('power-button').addEventListener('click', function() {
+                document.getElementById('shutdown-dialog').classList.add('show');
+            });
+            
+            // Диалог выключения
+            document.getElementById('power-off-btn').addEventListener('click', function() {
+                // В реальной системе здесь было бы выключение
+                addNotification("Система", "Система выключается...");
+                setTimeout(() => {
+                    // Имитация выключения - скрываем ОС и показываем экран блокировки
+                    document.getElementById('os-container').style.display = 'none';
+                    document.getElementById('lock-screen').classList.remove('hidden');
+                    document.getElementById('shutdown-dialog').classList.remove('show');
+                }, 1000);
+            });
+            
+            document.getElementById('reboot-btn').addEventListener('click', function() {
+                addNotification("Система", "Система перезагружается...");
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            });
+            
+            document.getElementById('cancel-shutdown-btn').addEventListener('click', function() {
+                document.getElementById('shutdown-dialog').classList.remove('show');
+            });
+            
+            // Свайп для открытия панели уведомлений
+            let startY = 0;
+            const statusBar = document.getElementById('status-bar');
+            
+            statusBar.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            });
+            
+            statusBar.addEventListener('touchmove', function(e) {
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                if (diff > 30) { // Свайп вниз
+                    document.getElementById('notification-panel').classList.add('show');
+                }
+            });
+            
+            // Клик по статус-бару для открытия панели уведомлений
+            statusBar.addEventListener('click', function(e) {
+                if (e.target === statusBar || e.target.closest('.status-left') || e.target.closest('.status-right')) {
+                    document.getElementById('notification-panel').classList.toggle('show');
+                }
+            });
+        }
+
+        // Инициализация поиска приложений
+        function initAppSearch() {
+            const searchInput = document.getElementById('app-search');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const appIcons = document.querySelectorAll('.app-icon');
+                
+                appIcons.forEach(icon => {
+                    const appName = icon.querySelector('span').textContent.toLowerCase();
+                    if (appName.includes(searchTerm)) {
+                        icon.style.display = 'flex';
+                    } else {
+                        icon.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Инициализация иконок статуса
+        function initStatusIcons() {
+            // Обновление уровня батареи
+            function updateBattery() {
+                // Имитация изменения уровня батареи
+                state.batteryLevel = Math.max(0, Math.min(100, state.batteryLevel - 0.1));
+                
+                const batteryIcon = document.getElementById('battery-icon');
+                const batteryLevel = document.getElementById('battery-level');
+                
+                batteryLevel.textContent = Math.round(state.batteryLevel) + '%';
+                
+                // Изменение иконки батареи в зависимости от уровня
+                if (state.batteryLevel >= 80) {
+                    batteryIcon.className = 'fas fa-battery-full';
+                } else if (state.batteryLevel >= 60) {
+                    batteryIcon.className = 'fas fa-battery-three-quarters';
+                } else if (state.batteryLevel >= 40) {
+                    batteryIcon.className = 'fas fa-battery-half';
+                } else if (.state.batteryLevel >= 20) {
+                    batteryIcon.className = 'fas fa-battery-quarter';
+                } else {
+                    batteryIcon.className = 'fas fa-battery-empty';
+                }
+            }
+            
+            // Обновляем каждую минуту
+            setInterval(updateBattery, 60000);
+            
+            // Имитация сигнала сети
+            function updateSignal() {
+                // В реальной системе здесь было бы получение реального уровня сигнала
+            }
+        }
+
+        // Смена обоев
+        function changeWallpaper(num) {
+            const homeScreen = document.getElementById('home-screen');
+            
+            // Удаляем старые классы обоев
+            homeScreen.classList.remove('wallpaper-1', 'wallpaper-2', 'wallpaper-3');
+            
+            // Добавляем новый класс обоев
+            homeScreen.classList.add(`wallpaper-${num}`);
+            
+            // Сохраняем выбор
+            state.wallpaper = num;
+            saveSettings();
+            
+            addNotification("Обои", `Обои изменены на вариант ${num}`);
+        }
+
+        // Сохранение настроек в localStorage
+        function saveSettings() {
+            const settings = {
+                wallpaper: state.wallpaper,
+                theme: state.theme,
+                volume: state.volume,
+                wifi: state.wifi,
+                bluetooth: state.bluetooth,
+                airplaneMode: state.airplaneMode
+            };
+            
+            localStorage.setItem('webos-settings', JSON.stringify(settings));
+        }
+
+        // Загрузка настроек из localStorage
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('webos-settings');
+            
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                
+                // Применяем настройки
+                state.wallpaper = settings.wallpaper || 1;
+                state.theme = settings.theme || 'light';
+                state.volume = settings.volume || 50;
+                state.wifi = settings.wifi !== undefined ? settings.wifi : true;
+                state.bluetooth = settings.bluetooth || false;
+                state.airplaneMode = settings.airplaneMode || false;
+                
+                // Применяем обои
+                const homeScreen = document.getElementById('home-screen');
+                homeScreen.classList.remove('wallpaper-1', 'wallpaper-2', 'wallpaper-3');
+                homeScreen.classList.add(`wallpaper-${state.wallpaper}`);
+                
+                // Применяем тему
+                if (state.theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                }
+            }
+        }
+
+        // Инициализация завершена
+        console.log("WebOS успешно загружена!");
+    </script>
+</body>
+</html>
