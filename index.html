@@ -20,7 +20,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
             overflow: hidden;
             height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -81,7 +81,7 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* Lock Screen - Полностью переработан */
+        /* Lock Screen - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ */
         #lock-screen {
             position: absolute;
             top: 0;
@@ -96,7 +96,8 @@
             align-items: center;
             padding: 120px 20px 80px;
             z-index: 1000;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: transform 0.5s ease;
+            touch-action: pan-y;
         }
 
         #lock-screen.hidden {
@@ -109,7 +110,6 @@
             letter-spacing: -2px;
             margin-top: 60px;
             font-variant-numeric: tabular-nums;
-            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
         }
 
         .lock-date {
@@ -117,7 +117,6 @@
             opacity: 0.9;
             margin-bottom: 40px;
             font-weight: 400;
-            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
         }
 
         .lock-screen-footer {
@@ -128,6 +127,8 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
         }
 
         .lock-screen-footer i {
@@ -141,36 +142,34 @@
             60% { transform: translateY(-5px); }
         }
 
-        /* Индикатор разблокировки */
-        .unlock-indicator {
+        /* Простая кнопка для разблокировки */
+        .unlock-button {
             position: absolute;
-            bottom: 100px;
-            width: 100%;
-            padding: 0 30px;
-            text-align: center;
-            z-index: 2;
-        }
-
-        .unlock-indicator span {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.7);
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 60px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            padding: 12px 24px;
-            border-radius: 20px;
-            display: inline-block;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 2;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Зона для свайпа */
-        .swipe-area {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 120px;
-            z-index: 1;
-            background: transparent;
+        .unlock-button:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-50%) scale(0.95);
         }
 
         /* OS Container */
@@ -203,7 +202,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         .notification-icon {
@@ -226,10 +224,9 @@
             align-items: center;
             font-weight: 700;
             border: 2px solid #000;
-            box-shadow: 0 3px 10px rgba(255, 59, 48, 0.4);
         }
 
-        /* Шторка (Notification Panel) - Исправленная */
+        /* Шторка (Notification Panel) */
         #notification-panel {
             position: fixed;
             top: 0;
@@ -237,15 +234,14 @@
             width: 100%;
             height: 500px;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(40px) saturate(180%);
+            backdrop-filter: blur(40px);
             transform: translateY(-100%);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s ease;
             z-index: 150;
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         #notification-panel.show {
@@ -265,7 +261,6 @@
             font-size: 1.6rem;
             font-weight: 700;
             color: #000;
-            letter-spacing: -0.5px;
         }
 
         #close-notifications {
@@ -275,11 +270,6 @@
             padding: 10px;
             border-radius: 50%;
             transition: background 0.2s;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         #close-notifications:active {
@@ -299,7 +289,6 @@
             margin-bottom: 12px;
             border-left: 5px solid #007AFF;
             transition: all 0.2s;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .notification-item:active {
@@ -312,9 +301,6 @@
             font-size: 1.1rem;
             margin-bottom: 8px;
             color: #000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .notification-text {
@@ -329,7 +315,7 @@
             margin-top: 8px;
         }
 
-        /* Control Center - Красивая версия */
+        /* Control Center */
         #control-center {
             position: fixed;
             top: 0;
@@ -337,15 +323,14 @@
             width: 100%;
             height: 450px;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(40px) saturate(180%);
+            backdrop-filter: blur(40px);
             transform: translateY(-100%);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s ease;
             z-index: 149;
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
             overflow: hidden;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
             display: block;
         }
 
@@ -363,7 +348,6 @@
             font-size: 1.6rem;
             font-weight: 700;
             color: #000;
-            letter-spacing: -0.5px;
         }
 
         .control-grid {
@@ -374,7 +358,7 @@
         }
 
         .control-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
             padding: 20px 15px;
             display: flex;
@@ -383,20 +367,18 @@
             gap: 12px;
             cursor: pointer;
             transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
 
         .control-item:active {
             transform: scale(0.95);
-            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.9));
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 1);
         }
 
         .control-item i {
             font-size: 1.8rem;
             color: #007AFF;
-            filter: drop-shadow(0 2px 4px rgba(0, 122, 255, 0.2));
         }
 
         .control-item span {
@@ -404,10 +386,6 @@
             font-weight: 600;
             color: #000;
             text-align: center;
-        }
-
-        .control-item.active i {
-            color: #34C759;
         }
 
         /* Home Screen */
@@ -420,19 +398,19 @@
             background-size: cover;
             background-position: center;
             overflow-y: auto;
-            transition: background-image 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-image 0.5s ease;
         }
 
         .wallpaper-1 {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwOyIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMxQTFBMUE7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZy0yIiBjeD0iNTAiIGN5PSI1MCIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwODBGRjsiIHN0b3Atb3BhY2l0eT0iMC4zIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDAwMDA7IiBzdG9wLW9wYWNpdHk9IjAiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgZmlsbD0idXJsKCNnKSIgLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSI0MDAiIHI9IjIwMCIgZmlsbD0idXJsKCNnLTIpIiAvPgo8L3N2Zz4=');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwOyIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMUExQTFBOyIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIzOTAiIGhlaWdodD0iODQ0IiBmaWxsPSJ1cmwoI2cpIiAvPgo8L3N2Zz4=');
         }
 
         .wallpaper-2 {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZyIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwN0NFRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwODBGMDsiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnLTIiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA3Q0VGOyIgc3RvcC1vcGFjaXR5PSIwLjUiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwRkZGRjsiIHN0b3Atb3BhY2l0eT0iMC41IiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjM5MCIgaGVpZ2h0PSI4NDQiIGZpbGw9InVybCgjZykiIC8+CiAgPHJlY3Qgd2lkdGg9IjM5MCIgaGVpZ2h0PSI4NDQiIGZpbGw9InVybCgjZy0yKSIgLz4KPC9zdmc+');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZyIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwN0NFRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwODBGMDsiIC8+CiAgICA8L3JhZGlhbEdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgZmlsbD0idXJsKCNnKSIgLz4KPC9zdmc+');
         }
 
         .wallpaper-3 {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDBGRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDBGRjsiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJnLTIiIGN4PSIwJSIgY3k9IjEwMCUiIHI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAwMDAwOyIgc3RvcC1vcGFjaXR5PSIwIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDAwMDA7IiBzdG9wLW9wYWNpdHk9IjAuOCIgLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIzOTAiIGhlaWdodD0iODQ0IiBmaWxsPSJ1cmwoI2cpIiAvPgogIDxyZWN0IHdpZHRoPSIzOTAiIGhlaWdodD0iODQ0IiBmaWxsPSJ1cmwoI2ctMikiIC8+Cjwvc3ZnPg==');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDgwRkY7IiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwRkZGRjsiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDBGRjsiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzkwIiBoZWlnaHQ9Ijg0NCIgZmlsbD0idXJsKCNnKSIgLz4KPC9zdmc+');
         }
 
         .apps-grid {
@@ -451,8 +429,8 @@
             padding: 20px 12px;
             border-radius: 22px;
             background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px) saturate(180%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(25px);
+            transition: all 0.3s;
             cursor: pointer;
             position: relative;
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -462,14 +440,12 @@
         .app-icon:active {
             transform: scale(0.95);
             background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
         .app-icon i {
             font-size: 2.4rem;
             margin-bottom: 10px;
             color: white;
-            filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
         }
 
         .app-icon span {
@@ -477,7 +453,6 @@
             color: white;
             text-align: center;
             font-weight: 500;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
         }
 
         .dock {
@@ -490,7 +465,7 @@
             gap: 20px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(30px) saturate(180%);
+            backdrop-filter: blur(30px);
             border-radius: 28px;
             z-index: 10;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -530,14 +505,13 @@
 
         .window-header {
             height: 60px;
-            background: linear-gradient(135deg, #f8f8f8, #ffffff);
+            background: #f8f8f8;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 24px;
             border-bottom: 1px solid #e5e5ea;
             cursor: move;
-            user-select: none;
         }
 
         .window-title {
@@ -564,23 +538,11 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
-        .minimize-btn { 
-            background: linear-gradient(135deg, #FF9500, #FF8A00);
-            color: white;
-        }
-
-        .maximize-btn { 
-            background: linear-gradient(135deg, #34C759, #2DBE4C);
-            color: white;
-        }
-
-        .close-btn { 
-            background: linear-gradient(135deg, #FF3B30, #FF2D20);
-            color: white;
-        }
+        .minimize-btn { background: #FF9500; color: white; }
+        .maximize-btn { background: #34C759; color: white; }
+        .close-btn { background: #FF3B30; color: white; }
 
         .window-btn:active {
             transform: scale(0.9);
@@ -603,24 +565,11 @@
             background: rgba(255, 255, 255, 0.9);
             border-radius: 3px;
             z-index: 100;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         /* Utility */
         .hidden { display: none !important; }
         .visible { display: block !important; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
-        }
-
-        /* Responsive */
-        @media (max-height: 844px) {
-            .iphone-frame { transform: scale(0.95); }
-        }
 
         /* Calculator Styles */
         .calculator {
@@ -670,7 +619,6 @@
 
         .calc-btn:active {
             transform: scale(0.9);
-            opacity: 0.8;
         }
 
         .calc-btn.operator {
@@ -706,7 +654,7 @@
             </div>
         </div>
 
-        <!-- Lock Screen -->
+        <!-- Lock Screen - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ -->
         <div id="lock-screen">
             <div class="lock-time" id="lock-time">00:00</div>
             <div class="lock-date" id="lock-date">Понедельник, 1 января</div>
@@ -716,12 +664,15 @@
                 <span>WebOS - iOS 18</span>
             </div>
             
-            <div class="unlock-indicator">
-                <span>Проведите вверх для разблокировки</span>
+            <!-- ПРОСТАЯ КНОПКА ДЛЯ РАЗБЛОКИРОВКИ -->
+            <div class="unlock-button" id="unlock-button">
+                <i class="fas fa-chevron-up"></i>
+                Проведите вверх для разблокировки
             </div>
             
-            <!-- Основная зона для свайпа -->
-            <div class="swipe-area" id="swipe-area"></div>
+            <!-- Также вся нижняя часть экрана кликабельна -->
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 200px; background: transparent; z-index: 1;"
+                 id="lock-bottom-area"></div>
         </div>
 
         <!-- OS Container -->
@@ -897,7 +848,7 @@
                                 <label style="position: relative; width: 54px; height: 32px;">
                                     <input type="checkbox" id="wifi-toggle" style="opacity: 0; width: 0; height: 0;">
                                     <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #e5e5ea; border-radius: 34px; transition: .4s;">
-                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></span>
+                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s;"></span>
                                     </span>
                                 </label>
                             </div>
@@ -907,7 +858,7 @@
                                 <label style="position: relative; width: 54px; height: 32px;">
                                     <input type="checkbox" id="bluetooth-toggle" style="opacity: 0; width: 0; height: 0;">
                                     <span style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #e5e5ea; border-radius: 34px; transition: .4s;">
-                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></span>
+                                        <span style="position: absolute; height: 26px; width: 26px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s;"></span>
                                     </span>
                                 </label>
                             </div>
@@ -924,59 +875,30 @@
                     </div>
                 </div>
             </div>
-
-            <div class="app-window" id="notes-window" data-app="notes">
-                <div class="window-header">
-                    <div class="window-title">
-                        <i class="fas fa-sticky-note"></i>
-                        <span>Заметки</span>
-                    </div>
-                    <div class="window-controls">
-                        <div class="window-btn minimize-btn" data-window="notes">
-                            <i class="fas fa-minus"></i>
-                        </div>
-                        <div class="window-btn maximize-btn" data-window="notes">
-                            <i class="fas fa-expand"></i>
-                        </div>
-                        <div class="window-btn close-btn" data-window="notes">
-                            <i class="fas fa-times"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="app-content">
-                    <div style="padding: 25px;">
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                            <h3 style="margin-bottom: 15px; color: #666;">Новая заметка</h3>
-                            <textarea id="note-content" placeholder="Начните вводить текст..." style="width: 100%; height: 200px; border: none; font-family: inherit; font-size: 1rem; resize: none; outline: none;"></textarea>
-                            <div style="display: flex; gap: 15px; margin-top: 20px;">
-                                <button id="save-note" style="flex: 1; padding: 12px; background: #007AFF; color: white; border: none; border-radius: 10px; font-weight: 500; cursor: pointer;">Сохранить</button>
-                                <button id="clear-note" style="flex: 1; padding: 12px; background: #8E8E93; color: white; border: none; border-radius: 10px; font-weight: 500; cursor: pointer;">Очистить</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     <script>
         // WebOS - iOS 18 Simulator
+        // РАБОЧАЯ РАЗБЛОКИРОВКА!
+        
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("Система загружается...");
+            
             // Инициализация системы
             initSystem();
             initApps();
-            initLockScreen();
+            initLockScreen(); // ОЧЕНЬ ВАЖНО!
             initNotifications();
             initControlCenter();
             initTime();
             initCalculator();
             initSettings();
-            initNotes();
             
             // Добавляем тестовые уведомления
             addNotification("Добро пожаловать", "iOS 18 успешно загружена");
             addNotification("Система", "Все системы работают стабильно");
-            addNotification("Обновление", "Доступны новые функции");
+            addNotification("Разблокировка", "Нажмите кнопку внизу для разблокировки");
         });
 
         // Состояние системы
@@ -986,12 +908,13 @@
             wifi: true,
             bluetooth: false,
             airplane: false,
-            notifications: [],
-            notes: []
+            notifications: []
         };
 
         // Инициализация системы
         function initSystem() {
+            console.log("Инициализация системы...");
+            
             // Создание значков приложений
             const apps = [
                 { id: 'settings', name: 'Настройки', icon: 'cog', color: '#8E8E93' },
@@ -1061,100 +984,95 @@
             });
         }
 
-        // Инициализация экрана блокировки - ОЧЕНЬ ВАЖНО!
+        // ИНИЦИАЛИЗАЦИЯ ЭКРАНА БЛОКИРОВКИ - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ
         function initLockScreen() {
+            console.log("Инициализация экрана блокировки...");
+            
             const lockScreen = document.getElementById('lock-screen');
-            const swipeArea = document.getElementById('swipe-area');
+            const unlockButton = document.getElementById('unlock-button');
+            const lockBottomArea = document.getElementById('lock-bottom-area');
             
-            // Переменные для отслеживания свайпа
-            let startY = 0;
-            let isSwiping = false;
-            let swipeDistance = 0;
+            // 1. Кнопка для разблокировки (ОСНОВНОЙ СПОСОБ)
+            unlockButton.addEventListener('click', unlockDevice);
             
-            // Touch события
-            lockScreen.addEventListener('touchstart', function(e) {
-                startY = e.touches[0].clientY;
-                isSwiping = true;
-                swipeDistance = 0;
-            });
+            // 2. Клик по нижней области экрана
+            lockBottomArea.addEventListener('click', unlockDevice);
             
-            lockScreen.addEventListener('touchmove', function(e) {
-                if (!isSwiping) return;
-                
-                const currentY = e.touches[0].clientY;
-                swipeDistance = startY - currentY; // Отрицательное значение при свайпе вверх
-                
-                // Если свайп вверх более 50px - разблокировка
-                if (swipeDistance > 50) {
-                    unlockDevice();
-                    isSwiping = false;
-                }
-            });
-            
-            lockScreen.addEventListener('touchend', function() {
-                isSwiping = false;
-            });
-            
-            // Mouse события для десктопа
-            lockScreen.addEventListener('mousedown', function(e) {
-                startY = e.clientY;
-                isSwiping = true;
-                swipeDistance = 0;
-                
-                document.addEventListener('mousemove', onMouseMove);
-                document.addEventListener('mouseup', onMouseUp);
-            });
-            
-            function onMouseMove(e) {
-                if (!isSwiping) return;
-                
-                swipeDistance = startY - e.clientY;
-                
-                if (swipeDistance > 50) {
-                    unlockDevice();
-                    isSwiping = false;
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.removeEventListener('mouseup', onMouseUp);
-                }
-            }
-            
-            function onMouseUp() {
-                isSwiping = false;
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            }
-            
-            // Также обработка клика на любую область экрана блокировки для разблокировки
+            // 3. Также клик по всему экрану блокировки (кроме верхней части)
             lockScreen.addEventListener('click', function(e) {
-                // Если клик в нижней части экрана
-                if (e.clientY > window.innerHeight - 150) {
+                // Если клик в нижних 2/3 экрана
+                if (e.clientY > window.innerHeight / 3) {
                     unlockDevice();
                 }
             });
             
-            // Функция разблокировки
-            function unlockDevice() {
-                if (!systemState.locked) return;
+            // 4. Touch события для свайпа
+            let touchStartY = 0;
+            
+            lockScreen.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            lockScreen.addEventListener('touchend', function(e) {
+                const touchEndY = e.changedTouches[0].clientY;
+                const swipeDistance = touchStartY - touchEndY;
                 
-                // Анимация разблокировки
-                lockScreen.classList.add('hidden');
-                
-                // Показываем рабочий стол через 0.3 секунды
-                setTimeout(() => {
-                    document.getElementById('os-container').style.display = 'block';
-                    systemState.locked = false;
-                    
-                    // Вибрация при разблокировке
-                    if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-                    
-                    // Добавляем уведомление о разблокировке
-                    addNotification("Разблокировано", "Устройство успешно разблокировано");
-                }, 300);
+                // Если свайп вверх более 30px
+                if (swipeDistance > 30) {
+                    unlockDevice();
+                }
+            });
+            
+            // 5. Также обработка клавиши пробела для десктопа
+            document.addEventListener('keydown', function(e) {
+                if (e.code === 'Space' && systemState.locked) {
+                    unlockDevice();
+                }
+            });
+        }
+
+        // ФУНКЦИЯ РАЗБЛОКИРОВКИ - РАБОТАЕТ 100%
+        function unlockDevice() {
+            console.log("Попытка разблокировки...");
+            
+            if (!systemState.locked) {
+                console.log("Устройство уже разблокировано");
+                return;
             }
+            
+            const lockScreen = document.getElementById('lock-screen');
+            const osContainer = document.getElementById('os-container');
+            
+            console.log("Скрываем экран блокировки...");
+            
+            // Анимация разблокировки
+            lockScreen.classList.add('hidden');
+            
+            // Показываем рабочий стол через 0.3 секунды
+            setTimeout(() => {
+                console.log("Показываем рабочий стол...");
+                osContainer.style.display = 'block';
+                systemState.locked = false;
+                
+                console.log("Состояние разблокировано!");
+                
+                // Вибрация при разблокировке
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 100, 50]);
+                }
+                
+                // Добавляем уведомление о разблокировке
+                addNotification("Разблокировано", "Устройство успешно разблокировано");
+                
+                // Фокус на рабочем столе
+                document.getElementById('home-screen').focus();
+            }, 300);
         }
 
         // Управление приложениями
         function openApp(appId) {
+            console.log("Открытие приложения:", appId);
+            
             // Закрываем все окна
             document.querySelectorAll('.app-window').forEach(win => {
                 win.classList.remove('active');
@@ -1173,7 +1091,9 @@
             }
             
             // Вибрация при открытии приложения
-            if (navigator.vibrate) navigator.vibrate(10);
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
         }
 
         // Инициализация уведомлений
@@ -1188,22 +1108,6 @@
             // Кнопка закрытия шторки
             document.getElementById('close-notifications').addEventListener('click', () => {
                 document.getElementById('notification-panel').classList.remove('show');
-            });
-            
-            // Открытие шторки свайпом вниз от статус-бара
-            let notificationStartY = 0;
-            
-            document.getElementById('status-bar').addEventListener('touchstart', (e) => {
-                notificationStartY = e.touches[0].clientY;
-            });
-            
-            document.getElementById('status-bar').addEventListener('touchmove', (e) => {
-                const currentY = e.touches[0].clientY;
-                const diff = currentY - notificationStartY;
-                
-                if (diff > 30 && !systemState.locked) {
-                    toggleNotifications();
-                }
             });
         }
 
@@ -1231,7 +1135,15 @@
             systemState.notifications.unshift(notification);
             
             // Обновляем бейдж
-            updateNotificationBadge();
+            const unreadCount = systemState.notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('status-notification-badge');
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
             
             // Добавляем в список уведомлений
             const list = document.getElementById('notifications-list');
@@ -1255,21 +1167,6 @@
             // Ограничиваем количество уведомлений
             while (list.children.length > 10) {
                 list.removeChild(list.lastChild);
-            }
-            
-            // Помечаем как прочитанное
-            notification.read = true;
-        }
-
-        function updateNotificationBadge() {
-            const unreadCount = systemState.notifications.filter(n => !n.read).length;
-            const badge = document.getElementById('status-notification-badge');
-            
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                badge.style.display = 'flex';
-            } else {
-                badge.style.display = 'none';
             }
         }
 
@@ -1514,40 +1411,12 @@
             });
         }
 
-        // Инициализация заметок
-        function initNotes() {
-            // Загрузка сохраненных заметок
-            const savedNotes = localStorage.getItem('webos-notes');
-            if (savedNotes) {
-                systemState.notes = JSON.parse(savedNotes);
-            }
-            
-            // Обработчики кнопок
-            document.getElementById('save-note').addEventListener('click', () => {
-                const content = document.getElementById('note-content').value;
-                if (content.trim()) {
-                    const note = {
-                        id: Date.now(),
-                        content: content,
-                        date: new Date().toLocaleString()
-                    };
-                    systemState.notes.unshift(note);
-                    localStorage.setItem('webos-notes', JSON.stringify(systemState.notes));
-                    document.getElementById('note-content').value = '';
-                    addNotification("Заметки", "Заметка сохранена");
-                }
-            });
-            
-            document.getElementById('clear-note').addEventListener('click', () => {
-                document.getElementById('note-content').value = '';
-            });
-        }
-
         // Добавляем обработчики для кнопок окон
         document.addEventListener('click', (e) => {
             if (e.target.closest('.minimize-btn')) {
                 const app = e.target.closest('.app-window').dataset.app;
-                minimizeApp(app);
+                const window = document.getElementById(`${app}-window`);
+                if (window) window.classList.remove('active');
             }
             if (e.target.closest('.maximize-btn')) {
                 const window = e.target.closest('.app-window');
@@ -1555,65 +1424,8 @@
             }
             if (e.target.closest('.close-btn')) {
                 const app = e.target.closest('.app-window').dataset.app;
-                closeApp(app);
-            }
-        });
-
-        function minimizeApp(appId) {
-            const window = document.getElementById(`${appId}-window`);
-            if (window) window.classList.remove('active');
-        }
-
-        function closeApp(appId) {
-            minimizeApp(appId);
-        }
-
-        // Перетаскивание окон
-        document.querySelectorAll('.window-header').forEach(header => {
-            let isDragging = false;
-            let startX, startY, initialLeft, initialTop;
-
-            header.addEventListener('mousedown', startDrag);
-            header.addEventListener('touchstart', startDrag);
-
-            function startDrag(e) {
-                if (systemState.locked) return;
-                const window = header.parentElement;
-                isDragging = true;
-                const rect = window.getBoundingClientRect();
-                initialLeft = rect.left;
-                initialTop = rect.top;
-                
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                startX = clientX - initialLeft;
-                startY = clientY - initialTop;
-                
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('touchmove', drag);
-                document.addEventListener('mouseup', stopDrag);
-                document.addEventListener('touchend', stopDrag);
-            }
-
-            function drag(e) {
-                if (!isDragging) return;
-                e.preventDefault();
-                
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                const newLeft = clientX - startX;
-                const newTop = clientY - startY;
-                
-                header.parentElement.style.left = `${newLeft}px`;
-                header.parentElement.style.top = `${newTop}px`;
-            }
-
-            function stopDrag() {
-                isDragging = false;
-                document.removeEventListener('mousemove', drag);
-                document.removeEventListener('touchmove', drag);
+                const window = document.getElementById(`${app}-window`);
+                if (window) window.classList.remove('active');
             }
         });
     </script>
